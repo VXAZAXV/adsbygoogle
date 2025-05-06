@@ -4,6 +4,7 @@ Analyzed & Deobfuscated By: VXAZ
 */
 (function (sttc) {
   'use strict';
+
   var unsignedMaxSafeInteger = BigInt(Number.MAX_SAFE_INTEGER);
   var unsignedMinSafeInteger = BigInt(Number.MIN_SAFE_INTEGER);
   var navUserAgent = self.navigator && self.navigator.userAgent;
@@ -119,13 +120,11 @@ Analyzed & Deobfuscated By: VXAZ
       }
     }
   }
-  ;
   function sa(a) {
     self.setTimeout(() => {
       throw a;
     }, 0);
   }
-  ;
   function ua(a, b) {
     let c = 0;
     a = /^[\s\xa0]*([\s\S]*?)[\s\xa0]*$/.exec(String(a))[1].split(".");
@@ -151,8 +150,7 @@ Analyzed & Deobfuscated By: VXAZ
   //  var ya = xa && xa[610401301];
   //  var wa = ya != null ? ya : false;
 
-  ;
-  function Ga(a) {
+  function auditNavUA(a) {
     const b = {};
     a.forEach(c => {
       b[c[0]] = c[1];
@@ -202,10 +200,9 @@ Analyzed & Deobfuscated By: VXAZ
     for (; d = c.exec(a);) {
       b.push([d[1], d[2], d[3] || undefined]);
     }
-    a = Ga(b);
+    a = auditNavUA(b);
     return navUserAgent.indexOf("Opera") != -1 ? a(["Version", "Opera"]) : navUserAgent.indexOf("Edge") != -1 ? a(["Edge"]) : navUserAgent.indexOf("Edg/") != -1 ? a(["Edg"]) : navUserAgent.indexOf("Silk") != -1 ? a(["Silk"]) : (navUserAgent.indexOf("Chrome") != -1 || navUserAgent.indexOf("CriOS") != -1) && !(navUserAgent.indexOf("Edge") != -1) || navUserAgent.indexOf("Silk") != -1 ? a(["Chrome", "CriOS", "HeadlessChrome"]) : (a = b[2]) && a[1] || "";
   }
-  ;
   function Ia(a, b) {
     if (typeof a === "string") {
       return typeof b !== "string" || b.length != 1 ? -1 : a.indexOf(b, 0);
@@ -278,12 +275,7 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return [];
   }
-  ;
-  function Pa(a) {
-    Pa[" "](a);
-    return a;
-  }
-  Pa[" "] = function () {};
+  // Computed Character Order List
   var Qa = {
     "0": 52,
     "1": 53,
@@ -399,7 +391,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     a.__closure__error__context__984382.severity = b;
   }
-  ;
   let Xa = undefined;
   let Ya;
   function Za(a) {
@@ -446,11 +437,8 @@ Analyzed & Deobfuscated By: VXAZ
     a[u] |= 32;
     return a;
   }
-  ;
-  var lb = {};
-  const nb = {};
-  var ob = Object.freeze({});
-  ;
+  var sharedObject = {};
+  var emptyObject = {};
   var qb = a => typeof a === "number";
   qb.uc = true;
   var rb = a => typeof a === "string";
@@ -462,7 +450,6 @@ Analyzed & Deobfuscated By: VXAZ
     x.uc = true;
     return x;
   }
-  ;
   function ub(a) {
     if (typeof a === "string") {
       if (!/^\s*(?:-?[1-9]\d*|0)?\s*$/.test(a)) {
@@ -522,11 +509,10 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return c;
   }
-  ;
-  function Eb(a, b = `unexpected value ${a}!`) {
+  function Eb(a, b) {
+    b ?? (b = "unexpected value ".concat(a, "!"));
     throw Error(b);
   }
-  ;
   function Jb(a) {
     if (a == null || typeof a === "number") {
       return a;
@@ -538,7 +524,7 @@ Analyzed & Deobfuscated By: VXAZ
   function Kb(a) {
     if (a != null && typeof a !== "boolean") {
       var b = typeof a;
-      throw Error(`Expected boolean but got ${b != "object" ? b : a ? Array.isArray(a) ? "array" : b : "null"}: ${a}`);
+      throw Error("Expected boolean but got ".concat(b != "object" ? b : a ? Array.isArray(a) ? "array" : b : "null", ": ", a));
     }
     return a;
   }
@@ -685,7 +671,7 @@ Analyzed & Deobfuscated By: VXAZ
     return a == null || typeof a === "string" ? a : undefined;
   }
   function $b(a, b, c, d) {
-    if (a != null && typeof a === "object" && a[gb] === lb) {
+    if (a != null && typeof a === "object" && a[gb] === sharedObject) {
       return a;
     }
     if (!Array.isArray(a)) {
@@ -713,11 +699,9 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return new b(a);
   }
-  ;
   function ac(a) {
     return a;
   }
-  ;
   function bc(a, b, c, d = false, e = false) {
     const f = [];
     var g = a.length;
@@ -794,7 +778,7 @@ Analyzed & Deobfuscated By: VXAZ
           const b = a[u] | 0;
           return a.length === 0 && b & 1 ? undefined : bc(a, b, dc);
         }
-        if (a[gb] === lb) {
+        if (a[gb] === sharedObject) {
           return w(a);
         }
         return;
@@ -807,7 +791,6 @@ Analyzed & Deobfuscated By: VXAZ
     a = a.A;
     return bc(a, a[u] | 0, dc);
   }
-  ;
   function fc(a) {
     a: {
       if (a == null) {
@@ -880,7 +863,6 @@ Analyzed & Deobfuscated By: VXAZ
       }
     }
   }
-  ;
   function hc(a, b) {
     if (typeof a !== "object") {
       return a;
@@ -901,10 +883,10 @@ Analyzed & Deobfuscated By: VXAZ
       }
       return a;
     }
-    if (a[gb] === lb) {
+    if (a[gb] === sharedObject) {
       b = a.A;
       c = b[u] | 0;
-      return (c === undefined ? a.i !== nb && !!(2 & (a.A[u] | 0)) : !!(2 & c) && a.i !== nb) ? a : ic(b, c);
+      return (c === undefined ? a.i !== emptyObject && !!(2 & (a.A[u] | 0)) : !!(2 & c) && a.i !== emptyObject) ? a : ic(b, c);
     }
   }
   function ic(a, b, c) {
@@ -914,7 +896,7 @@ Analyzed & Deobfuscated By: VXAZ
   function jc(a) {
     var b = a.A;
     const c = b[u] | 0;
-    if (!(c === undefined ? a.i !== nb && !!(2 & (a.A[u] | 0)) : !!(2 & c) && a.i !== nb)) {
+    if (!(c === undefined ? a.i !== emptyObject && !!(2 & (a.A[u] | 0)) : !!(2 & c) && a.i !== emptyObject)) {
       return a;
     }
     a = new a.constructor(ic(b, c));
@@ -923,7 +905,7 @@ Analyzed & Deobfuscated By: VXAZ
     return a;
   }
   function kc(a) {
-    if (a.i !== nb) {
+    if (a.i !== emptyObject) {
       return false;
     }
     let b = a.A;
@@ -934,11 +916,10 @@ Analyzed & Deobfuscated By: VXAZ
     return true;
   }
   function lc(a) {
-    if (!kc(a) && ((a.A[u] | 0) === undefined ? a.i !== nb && !!(2 & (a.A[u] | 0)) : !!(2 & (a.A[u] | 0)) && a.i !== nb)) {
+    if (!kc(a) && ((a.A[u] | 0) === undefined ? a.i !== emptyObject && !!(2 & (a.A[u] | 0)) : !!(2 & (a.A[u] | 0)) && a.i !== emptyObject)) {
       throw Error();
     }
   }
-  ;
   const mc = ub(0);
   function y(a, b, c, d) {
     if (b === -1) {
@@ -1020,7 +1001,7 @@ Analyzed & Deobfuscated By: VXAZ
   function rc(a, b, c, d, e) {
     let f = a.A;
     let g = f[u] | 0;
-    d = (g === undefined ? a.i !== nb && !!(2 & (a.A[u] | 0)) : !!(2 & g) && a.i !== nb) ? 1 : d;
+    d = (g === undefined ? a.i !== emptyObject && !!(2 & (a.A[u] | 0)) : !!(2 & g) && a.i !== emptyObject) ? 1 : d;
     e = !!e || d === 3;
     if (d === 2 && kc(a)) {
       f = a.A;
@@ -1234,7 +1215,7 @@ Analyzed & Deobfuscated By: VXAZ
       return b;
     }
     e = d[u] | 0;
-    if (!(e === undefined ? a.i !== nb && !!(2 & (a.A[u] | 0)) : !!(2 & e) && a.i !== nb)) {
+    if (!(e === undefined ? a.i !== emptyObject && !!(2 & (a.A[u] | 0)) : !!(2 & e) && a.i !== emptyObject)) {
       const f = jc(b);
       if (f !== b) {
         if (kc(a)) {
@@ -1251,7 +1232,7 @@ Analyzed & Deobfuscated By: VXAZ
     var e = a.A;
     var f = e;
     e = e[u] | 0;
-    var g = e === undefined ? a.i !== nb && !!(2 & (a.A[u] | 0)) : !!(2 & e) && a.i !== nb;
+    var g = e === undefined ? a.i !== emptyObject && !!(2 & (a.A[u] | 0)) : !!(2 & e) && a.i !== emptyObject;
     const h = g ? 1 : d;
     d = h === 3;
     var k = !g;
@@ -1277,7 +1258,7 @@ Analyzed & Deobfuscated By: VXAZ
         const Ra = $b(m[H], b, false, p);
         if (Ra instanceof b) {
           if (!v) {
-            const Sa = Ra.i !== nb && !!(2 & (Ra.A[u] | 0));
+            const Sa = Ra.i !== emptyObject && !!(2 & (Ra.A[u] | 0));
             if (t) {
               t = !Sa;
             }
@@ -1355,7 +1336,7 @@ Analyzed & Deobfuscated By: VXAZ
     for (let p = 0; p < c.length; p++) {
       var m = c[p];
       if (!h) {
-        m = m.i !== nb && !!(2 & (m.A[u] | 0));
+        m = m.i !== emptyObject && !!(2 & (m.A[u] | 0));
         if (n) {
           n = !m;
         }
@@ -1426,15 +1407,14 @@ Analyzed & Deobfuscated By: VXAZ
   function Uc(a, b) {
     var c = performance.now();
     if (c != null && typeof c !== "number") {
-      throw Error(`Value of float/double field must be a number, found ${typeof c}: ${c}`);
+      throw Error("Value of float/double field must be a number, found ".concat(typeof c, ": ", c));
     }
     yc(a, b, c, 0);
   }
-  ;
   function ad(a) {
     const b = a.A;
     const c = b[u] | 0;
-    return (c === undefined ? a.i !== nb && !!(2 & (a.A[u] | 0)) : !!(2 & c) && a.i !== nb) ? a : new a.constructor(ic(b, c));
+    return (c === undefined ? a.i !== emptyObject && !!(2 & (a.A[u] | 0)) : !!(2 & c) && a.i !== emptyObject) ? a : new a.constructor(ic(b, c));
   }
   var J = class {
     constructor(a) {
@@ -1444,7 +1424,7 @@ Analyzed & Deobfuscated By: VXAZ
       return w(this);
     }
   };
-  J.prototype[gb] = lb;
+  J.prototype[gb] = sharedObject;
   function bd(a, b) {
     if (b == null) {
       return new a();
@@ -1457,7 +1437,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return new a(kb(b));
   }
-  ;
   function cd(a) {
     return () => {
       var b;
@@ -1484,7 +1463,6 @@ Analyzed & Deobfuscated By: VXAZ
       return b;
     };
   }
-  ;
   var ed = class extends J {};
   var fd = class extends J {};
   let gd;
@@ -1501,7 +1479,6 @@ Analyzed & Deobfuscated By: VXAZ
       return Math.floor(Math.random() * 4294967296);
     }
   }
-  ;
   function jd(a, b) {
     if (!typeof a.goog_pvsid === "number") {
       try {
@@ -1521,12 +1498,11 @@ Analyzed & Deobfuscated By: VXAZ
     if (!a || a <= 0) {
       b.ka({
         methodName: 784,
-        ua: Error(`Invalid correlator, ${a}`)
+        ua: Error("Invalid correlator, ".concat(a))
       });
     }
     return a || -1;
   }
-  ;
   function kd(a) {
     return function () {
       return !a.apply(this, arguments);
@@ -1553,8 +1529,6 @@ Analyzed & Deobfuscated By: VXAZ
       }
     };
   }
-  ;
-  ;
   function pd(a, b) {
     const c = {};
     for (const d in a) if (b.call(undefined, a[d], d, a)) {
@@ -1579,7 +1553,7 @@ Analyzed & Deobfuscated By: VXAZ
     for (const c in a) b[c] = a[c];
     return b;
   }
-  ; /* 
+  /* 
     Copyright Google LLC 
     SPDX-License-Identifier: Apache-2.0 
     */
@@ -1602,7 +1576,6 @@ Analyzed & Deobfuscated By: VXAZ
     } catch (b) {}
     return a;
   }
-  ;
   var stringObject = class {
     constructor(a) {
       this.g = a;
@@ -1626,20 +1599,17 @@ Analyzed & Deobfuscated By: VXAZ
     }
     throw Error("");
   }
-  ;
   var zd = /^\s*(?!javascript:)(?:[\w+.-]+:|[^:/?#]*(?:[/?#]|$))/i;
   function Ad(a = document) {
     a = a.querySelector?.("script[nonce]");
     return a == null ? "" : a.nonce || a.getAttribute("nonce") || "";
   }
-  ;
   const Bd = "alternate author bookmark canonical cite help icon license modulepreload next prefetch dns-prefetch prerender preconnect preload prev search subresource".split(" ");
   function Cd(a) {
     return String(a).replace(/\-([a-z])/g, function (b, c) {
       return c.toUpperCase();
     });
   }
-  ;
   var Dd = RegExp("^(?:([^:/?#.]+):)?(?://(?:([^\\\\/?#]*)@)?([^\\\\/?#]*?)(?::([0-9]+))?(?=[\\\\/?#]|$))?([^?#]+)?(?:\\?([^#]*))?(?:#([\\s\\S]*))?$");
   var Ed = /#|$/;
   function Fd(a, b) {
@@ -1668,7 +1638,6 @@ Analyzed & Deobfuscated By: VXAZ
     d += b.length + 1;
     return decodeURIComponent(a.slice(d, e !== -1 ? e : 0).replace(/\+/g, " "));
   }
-  ;
   function createPolicyScriptObject(a, ...b) {
     var c = a[0];
     var d = 0;
@@ -1709,14 +1678,13 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return createTrustedScriptObject(a + b + c);
   }
-  ;
   function Jd(a) {
     try {
       var b;
       if (b = !!a && a.location.href != null) {
         a: {
           try {
-            Pa(a.foo);
+            a.foo;
             b = true;
             break a;
           } catch (c) {}
@@ -1750,10 +1718,10 @@ Analyzed & Deobfuscated By: VXAZ
       return Math.random();
     }
   }
-  function Pd(a, b) {
-    if (a) {
-      for (const c in a) if (Object.prototype.hasOwnProperty.call(a, c)) {
-        b(a[c], c, a);
+  function isPropInObject(obj, handler) {
+    if (obj) {
+      for (var prop in obj) if (obj.hasOwnProperty(prop)) {
+        handler(obj[prop], prop, obj);
       }
     }
   }
@@ -1782,7 +1750,7 @@ Analyzed & Deobfuscated By: VXAZ
   }
   var Vd = ld(() => !(navUserAgent.indexOf("iPad") != -1 || navUserAgent.indexOf("Android") != -1 && !(navUserAgent.indexOf("Mobile") != -1) || navUserAgent.indexOf("Silk") != -1) && (navUserAgent.indexOf("iPod") != -1 || navUserAgent.indexOf("iPhone") != -1 || navUserAgent.indexOf("Android") != -1 || navUserAgent.indexOf("IEMobile") != -1) ? 2 : navUserAgent.indexOf("iPad") != -1 || navUserAgent.indexOf("Android") != -1 && !(navUserAgent.indexOf("Mobile") != -1) || navUserAgent.indexOf("Silk") != -1 ? 1 : 0);
   var Wd = a => {
-    Pd({
+    isPropInObject({
       display: "none"
     }, (b, c) => {
       a.style.setProperty(c, b, "important");
@@ -1830,7 +1798,6 @@ Analyzed & Deobfuscated By: VXAZ
   function Md(a, b = document) {
     return b.createElement(String(a).toLowerCase());
   }
-  ;
   function ee(a, b, c) {
     if (typeof a.addEventListener === "function") {
       a.addEventListener(b, c, false);
@@ -1839,7 +1806,6 @@ Analyzed & Deobfuscated By: VXAZ
   function fe(a, b, c) {
     return typeof a.removeEventListener === "function" ? (a.removeEventListener(b, c, false), true) : false;
   }
-  ;
   function ge(a, b, c = null, d = false, e = false) {
     he(a, b, c, d, e);
   }
@@ -1874,7 +1840,7 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function ie(a, b) {
     let c = `https://${"pagead2.googlesyndication.com"}/pagead/gen_204?id=${b}`;
-    Pd(a, (d, e) => {
+    isPropInObject(a, (d, e) => {
       if (d || d === 0) {
         c += `&${e}=${encodeURIComponent(String(d))}`;
       }
@@ -1894,7 +1860,6 @@ Analyzed & Deobfuscated By: VXAZ
       ge(window, a, undefined, false, false);
     }
   }
-  ;
   let ke = null;
   var le = (a, b = []) => {
     let c = false;
@@ -1961,7 +1926,6 @@ Analyzed & Deobfuscated By: VXAZ
   function oe(a = ne()) {
     return a ? Jd(a.master) ? a.master : null : null;
   }
-  ;
   function pe(a, b) {
     b = String(b);
     if (a.contentType === "application/xhtml+xml") {
@@ -2035,7 +1999,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return b;
   }
-  ;
   const ze = RegExp("^https?://(\\w|-)+\\.cdn\\.ampproject\\.(net|org)(\\?|/|$)");
   var Ae = class {
     constructor(a, b) {
@@ -2070,7 +2033,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return Ce;
   }
-  ;
   function Ee() {
     const a = self.performance;
     return a && a.now && a.timing ? Math.floor(a.now() + a.timing.navigationStart) : Date.now();
@@ -2079,7 +2041,6 @@ Analyzed & Deobfuscated By: VXAZ
     const a = self.performance;
     return a && a.now ? a.now() : null;
   }
-  ;
   var Ge = class {
     constructor(a, b) {
       var c = Fe() || Ee();
@@ -2166,7 +2127,7 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function Oe(a, b, c, d, e) {
     const f = [];
-    Pd(a, (g, h) => {
+    isPropInObject(a, (g, h) => {
       if (g = Pe(g, b, c, d, e)) {
         f.push(`${h}=${g}`);
       }
@@ -2457,7 +2418,7 @@ Analyzed & Deobfuscated By: VXAZ
   var af = class extends J {};
   var bf = [4, 5];
   function cf(a, b) {
-    var c = B(a, Ye, 2, undefined === ob ? 2 : 4);
+    var c = B(a, Ye, 2, 4);
     if (!c.length) {
       return df(a, b);
     }
@@ -2521,7 +2482,7 @@ Analyzed & Deobfuscated By: VXAZ
     }
     let e;
     try {
-      var f = rc(a, 8, Zb, undefined === ob ? 2 : 4);
+      var f = rc(a, 8, Zb, 4);
       e = b(...f);
     } catch (g) {
       return {
@@ -2614,7 +2575,6 @@ Analyzed & Deobfuscated By: VXAZ
       value: c
     };
   }
-  ;
   var gf = class extends J {};
   var hf = class extends J {
     getValue() {
@@ -2768,7 +2728,6 @@ Analyzed & Deobfuscated By: VXAZ
       redirect: "follow"
     }).catch(() => {});
   }
-  ;
   function lg(a, ...b) {
     try {
       if (a.D && nf(a.g.concat(b), a.j).length >= 65536) {
@@ -2946,9 +2905,9 @@ Analyzed & Deobfuscated By: VXAZ
       case 3:
         return (y(a.A, 3) == null || typeof y(a.A, 3) === "string" ? y(a.A, 3) : undefined) ?? "";
       case 6:
-        return rc(a, 4, Zb, undefined === ob ? 2 : 4);
+        return rc(a, 4, Zb, 4);
       case 8:
-        return rc(a, 4, Zb, undefined === ob ? 2 : 4);
+        return rc(a, 4, Zb, 4);
       default:
         return null;
     }
@@ -2987,7 +2946,7 @@ Analyzed & Deobfuscated By: VXAZ
   function Hg(a) {
     const b = K(zg).N;
     if (b && Dc(a, lf) !== 8) {
-      const c = Ma(B(a, hf, 5, undefined === ob ? 2 : 4), d => {
+      const c = Ma(B(a, hf, 5, 4), d => {
         d = A(d, Ye, 1) ? b ? cf(A(d, Ye, 1), b) : {
           success: false,
           O: 1
@@ -3035,13 +2994,13 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function Og(a, b) {
     const c = Gg(b);
-    Pd(a, (d, e) => {
+    isPropInObject(a, (d, e) => {
       if (c[e]) {
         const g = kf(JSON.stringify(d));
         if ((y(g.A, Dc(g, lf) === 8 ? 8 : -1) == null ? y(g.A, Dc(g, lf) === 8 ? 8 : -1) : Number.isFinite(y(g.A, Dc(g, lf) === 8 ? 8 : -1)) ? y(g.A, Dc(g, lf) === 8 ? 8 : -1) | 0 : undefined) != null) {
           var f = kf(JSON.stringify(c[e]));
           d = Ec(g, gf, 4);
-          f = rc(Fc(f, gf, 4), 4, Zb, undefined === ob ? 2 : 4);
+          f = rc(Fc(f, gf, 4), 4, Zb, 4);
           Kc(d, f);
         }
         c[e] = w(g);
@@ -3093,7 +3052,7 @@ Analyzed & Deobfuscated By: VXAZ
           if (h === 8 && b[v]) {
             k = kf(JSON.stringify(b[v]));
             h = Ec(p, gf, 4);
-            k = rc(Fc(k, gf, 4), 4, Zb, undefined === ob ? 2 : 4);
+            k = rc(Fc(k, gf, 4), 4, Zb, 4);
             Kc(h, k);
           } else if (k && K(Fg).g.get(m)?.has(v)) {
             g.push(k);
@@ -3152,7 +3111,6 @@ Analyzed & Deobfuscated By: VXAZ
       Og(Gg(4), a);
     }
   }
-  ;
   function N(a, b, c) {
     if (!c.hasOwnProperty(a)) {
       Object.defineProperty(c, String(a), {
@@ -3203,7 +3161,6 @@ Analyzed & Deobfuscated By: VXAZ
       });
     }
   }
-  ;
   function Xg(a, b, c) {
     a.j = b[a] || (() => {});
     a.u = (d, e) => (b[a] || (() => []))(d, c, e);
@@ -3222,7 +3179,6 @@ Analyzed & Deobfuscated By: VXAZ
       return [];
     }
   }
-  ;
   function Ue(a, b, c, d = false, e) {
     if ((d ? a.g : Math.random()) < (e || .01)) {
       try {
@@ -3231,7 +3187,7 @@ Analyzed & Deobfuscated By: VXAZ
           f = c;
         } else {
           f = new Se();
-          Pd(c, (h, k) => {
+          isPropInObject(c, (h, k) => {
             var n = f;
             const l = n.u++;
             h = Ne(k, h);
@@ -3389,7 +3345,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     c.forEach(b, undefined);
   }
-  ;
   var mh = class {
     constructor() {
       this.g = {};
@@ -3409,7 +3364,6 @@ Analyzed & Deobfuscated By: VXAZ
       this.i = {};
     }
   };
-  ;
   function qh(a) {
     try {
       return new oh({
@@ -3639,7 +3593,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return b;
   }
-  ;
   function Ph(a, b, c) {
     switch (c) {
       case 0:
@@ -3669,7 +3622,6 @@ Analyzed & Deobfuscated By: VXAZ
       b.style.display = "block";
     }
   }
-  ;
   var O = class {
     constructor(a, b = false) {
       this.g = a;
@@ -3750,7 +3702,6 @@ Analyzed & Deobfuscated By: VXAZ
       this.C = () => {};
     }
   };
-  ;
   function Ei(a, b) {
     const c = e => {
       e = e.hasOwnProperty("google-ama-order-assurance") ? e["google-ama-order-assurance"] : null;
@@ -3788,7 +3739,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     throw Error("Un-handled RelativePosition: " + b);
   }
-  ;
   var Hi = {
     rectangle: 1,
     horizontal: 2,
@@ -3812,7 +3762,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return b || {};
   }
-  ;
   function Ki(a, b) {
     do {
       const c = b.getComputedStyle ? b.getComputedStyle(a, null) : a.currentStyle;
@@ -3822,7 +3771,6 @@ Analyzed & Deobfuscated By: VXAZ
     } while (a = a.parentElement);
     return true;
   }
-  ;
   function Li(a, b) {
     var c = ["width", "height"];
     for (let e = 0; e < c.length; e++) {
@@ -3943,7 +3891,6 @@ Analyzed & Deobfuscated By: VXAZ
       d.zIndex = "30";
     }
   }
-  ;
   function Vi(a, b, c) {
     let d;
     return a.style && !!a.style[c] && Ud(a.style[c]) || (d = b.getComputedStyle ? b.getComputedStyle(a, null) : a.currentStyle) && !!d[c] && Ud(d[c]) || null;
@@ -3990,7 +3937,6 @@ Analyzed & Deobfuscated By: VXAZ
     } while (b.parentElement && (b = b.parentElement) && b.tagName !== "HTML");
     return c;
   }
-  ;
   var cj = {
     google_ad_channel: true,
     google_ad_client: true,
@@ -4027,7 +3973,6 @@ Analyzed & Deobfuscated By: VXAZ
       a[e] = d.value;
     }
   }
-  ;
   var fj = class extends J {
     g() {
       return Mc(this, 23);
@@ -4242,16 +4187,15 @@ Analyzed & Deobfuscated By: VXAZ
       new Aj().I(c, d);
     }, undefined, false);
   }
-  ;
   function Fj(a) {
     if (!a) {
       return null;
     }
     var b = y(a.A, 7) == null || typeof y(a.A, 7) === "string" ? y(a.A, 7) : undefined;
-    if ((y(a.A, 1) == null || typeof y(a.A, 1) === "string" ? y(a.A, 1) : undefined) || a.getId() || rc(a, 4, Zb, undefined === ob ? 2 : 4).length > 0) {
+    if ((y(a.A, 1) == null || typeof y(a.A, 1) === "string" ? y(a.A, 1) : undefined) || a.getId() || rc(a, 4, Zb, 4).length > 0) {
       var c = a.getId();
       var d = y(a.A, 1) == null || typeof y(a.A, 1) === "string" ? y(a.A, 1) : undefined;
-      var e = rc(a, 4, Zb, undefined === ob ? 2 : 4);
+      var e = rc(a, 4, Zb, 4);
       b = Qb(y(a.A, 2));
       var f = Qb(y(a.A, 5));
       a = (y(a.A, 6) == null ? y(a.A, 6) : Number.isFinite(y(a.A, 6)) ? y(a.A, 6) | 0 : undefined) == null ? y(a.A, 6) == null ? y(a.A, 6) : Number.isFinite(y(a.A, 6)) ? y(a.A, 6) | 0 : undefined : Hj[a];
@@ -4289,7 +4233,6 @@ Analyzed & Deobfuscated By: VXAZ
     a = a.google_ama_state = a.google_ama_state || {};
     return a.optimization = a.optimization || {};
   }
-  ;
   var Lj = a => {
     switch (y(a.A, 8) == null ? y(a.A, 8) : Number.isFinite(y(a.A, 8)) ? y(a.A, 8) | 0 : undefined) {
       case 1:
@@ -4442,7 +4385,6 @@ Analyzed & Deobfuscated By: VXAZ
   };
   const Oj = (a, b) => (a = Sj(a, b)) && a.length > 0 ? a[0] : null;
   const Sj = (a, b) => (b = Fj(b)) ? yj(b, a) : null;
-  ;
   var Tj = cd($f);
   var bg = cd(dg);
   function Vj(a, b, c, d, e) {
@@ -4468,7 +4410,7 @@ Analyzed & Deobfuscated By: VXAZ
       yc(b, 2, Yb(n), "");
     } catch (p) {}
     try {
-      var l = typeof c?.message === "string" ? c.message : `Caught ${c}`;
+      var l = typeof c?.message === "string" ? c.message : "Caught ".concat(c);
       yc(b, 3, Yb(l), "");
     } catch (p) {}
     try {
@@ -4511,7 +4453,6 @@ Analyzed & Deobfuscated By: VXAZ
     d = yc(e, 5, (d ?? 1) == null ? d ?? 1 : Sb(d ?? 1), "0");
     kg(a, d);
   }
-  ;
   var Xj = class {
     constructor() {
       this.g = Wj;
@@ -4523,7 +4464,6 @@ Analyzed & Deobfuscated By: VXAZ
       rb: Number.MAX_SAFE_INTEGER
     };
   }
-  ;
   var ak = class {
     constructor(a = false) {
       this.D = Zj;
@@ -4666,7 +4606,6 @@ Analyzed & Deobfuscated By: VXAZ
       ub: b
     };
   }
-  ;
   var nk = class {
     constructor() {
       var a = Math.random;
@@ -4742,12 +4681,10 @@ Analyzed & Deobfuscated By: VXAZ
       return wk(a.parentNode);
     }
   }
-  ;
   function isApiReady(a) {
     a = a && a.googletag || window.googletag;
     return a && a.apiReady && a || undefined;
   }
-  ;
   function Hk(a) {
     const gtagObject = isApiReady(a);
     return gtagObject ? Ja(Ka(gtagObject.pubads().getSlots(), c => a.document.getElementById(c.getSlotElementId())), c => c != null) : null;
@@ -4774,13 +4711,12 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return b;
   }
-  ;
   function Jk(a, b) {
     if (a.u) {
       return true;
     }
     a.u = true;
-    const c = B(a.j, Nh, 1, undefined === ob ? 2 : 4);
+    const c = B(a.j, Nh, 1, 4);
     a.i = 0;
     const d = Kk(a.G);
     var e = a.g;
@@ -5134,7 +5070,7 @@ Analyzed & Deobfuscated By: VXAZ
       this.B = e || null;
       if (this.G = d) {
         a = a.document;
-        d = B(d, lj, 5, undefined === ob ? 2 : 4);
+        d = B(d, lj, 5, 4);
         d = Nj(a, d);
       } else {
         d = Nj(a.document, []);
@@ -5148,13 +5084,12 @@ Analyzed & Deobfuscated By: VXAZ
   function Kk(a) {
     const b = {};
     if (a) {
-      rc(a, 6, Ob, undefined === ob ? 2 : 4).forEach(c => {
+      rc(a, 6, Ob, 4).forEach(c => {
         b[c] = true;
       });
     }
     return b;
   }
-  ;
   var Pk = dd(class extends J {});
   function Qk(a) {
     try {
@@ -5167,7 +5102,6 @@ Analyzed & Deobfuscated By: VXAZ
       value: null
     }, null);
   }
-  ;
   function Rk() {
     if (Sk) {
       return Sk;
@@ -5177,7 +5111,7 @@ Analyzed & Deobfuscated By: VXAZ
     return b != null && typeof b == "object" && b.S != null && typeof b.S == "object" ? Sk = b : a.google_persistent_state_async = Sk = new Tk();
   }
   function Wk(a, b, c) {
-    b = Vk[a] || `google_ps_${b}`;
+    b = Vk[a] || "google_ps_".concat(b);
     a = a.S;
     const d = a[b];
     return d === undefined ? (a[b] = c(), a[b]) : d;
@@ -5277,7 +5211,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return null;
   }
-  ;
   function $k(a) {
     var b = new al();
     return nc(b, 5, Kb(a));
@@ -5563,7 +5496,7 @@ Analyzed & Deobfuscated By: VXAZ
       };
       const c = Xk(b, 25, []);
       c.push(a);
-      b.S[Vk[a] || `google_ps_${25}`] = c;
+      b.S[Vk[a] || "google_ps_".concat(25)] = c;
     }).then(rl);
   }
   function ql(a, b) {
@@ -5620,7 +5553,6 @@ Analyzed & Deobfuscated By: VXAZ
       value: a
     }, null) : new oh(null, Error("unav"));
   }
-  ;
   var sl = class extends J {};
   var tl = class extends J {};
   var ul = class {
@@ -5634,7 +5566,7 @@ Analyzed & Deobfuscated By: VXAZ
       var d = c.resolve;
       var e = a.g;
       e.g.google_ama_state = e.g.google_ama_state || {};
-      B(e.j, Nh, 1, undefined === ob ? 2 : 4);
+      B(e.j, Nh, 1, 4);
       d.call(c, new ul(b));
     } catch (f) {
       a.i.reject(f);
@@ -5679,13 +5611,13 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function zl(a) {
     if (!/^[0-1]+$/.test(a)) {
-      throw Error(`Invalid input [${a}] not a bit string.`);
+      throw Error("Invalid input [".concat(a, "] not a bit string."));
     }
     return parseInt(a, 2);
   }
   function Al(a) {
     if (!/^[0-1]+$/.test(a)) {
-      throw Error(`Invalid input [${a}] not a bit string.`);
+      throw Error("Invalid input [".concat(a, "] not a bit string."));
     }
     const b = [1, 2, 3, 5];
     let c = 0;
@@ -5697,7 +5629,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return c;
   }
-  ;
   function Bl(a) {
     var b = yl(a);
     var c = zl(b.slice(0, 6));
@@ -5711,7 +5642,7 @@ Analyzed & Deobfuscated By: VXAZ
     let e = b.slice(12).replace(/0+$/, "");
     for (let k = 0; k < c; k++) {
       if (e.length === 0) {
-        throw Error(`Found ${k} of ${c} sections [${d}] but reached end of input [${b}]`);
+        throw Error("Found ".concat(k, " of ", c, " sections [", d, "] but reached end of input [", b, "]"));
       }
       var f = zl(e[0]) === 0;
       e = e.slice(1);
@@ -5731,18 +5662,18 @@ Analyzed & Deobfuscated By: VXAZ
       }
     }
     if (e.length > 0) {
-      throw Error(`Found ${c} sections [${d}] but has remaining input [${e}], entire input [${b}]`);
+      throw Error("Found ".concat(c, " sections [", d, "] but has remaining input [", e, "], entire input [", b, "]"));
     }
     return xc(a, 3, d, Pb);
   }
   function Cl(a, b) {
     const c = a.indexOf("11");
     if (c === -1) {
-      throw Error(`Expected section bitstring but not found in [${a}] part of [${b}]`);
+      throw Error("Expected section bitstring but not found in [".concat(a, "] part of [", b, "]"));
     }
     return a.slice(0, c + 2);
   }
-  ;
+
   // Dl = "a".charCodeAt()
 
   var El = rd(dh);
@@ -5794,7 +5725,7 @@ Analyzed & Deobfuscated By: VXAZ
       if (V(a, 1)) {
         const f = e + 1;
         if (c && c.indexOf(f) === -1) {
-          throw Error(`ID: ${f} is outside of allowed values!`);
+          throw Error("ID: ".concat(f, " is outside of allowed values!"));
         }
         d.push(f);
       }
@@ -5805,14 +5736,14 @@ Analyzed & Deobfuscated By: VXAZ
     const b = V(a, 16);
     return !!V(a, 1) === true ? (a = Jl(a), a.forEach(c => {
       if (c > b) {
-        throw Error(`ID ${c} is past MaxVendorId ${b}!`);
+        throw Error("ID ".concat(c, " is past MaxVendorId ", b, "!"));
       }
     }), a) : Kl(a, b);
   }
   var Ml = class {
     constructor(a) {
       if (/[^01]/.test(a)) {
-        throw Error(`Input bitstring ${a} is malformed!`);
+        throw Error("Input bitstring ".concat(a, " is malformed!"));
       }
       this.i = a;
       this.g = 0;
@@ -5899,7 +5830,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return b;
   }
-  ;
   rd(dh).map(a => Number(a));
   rd(eh).map(a => Number(a));
   function Vl(a) {
@@ -6089,7 +6019,6 @@ Analyzed & Deobfuscated By: VXAZ
         return null;
     }
   }
-  ;
   function dm(a, b) {
     const c = a.document;
     const d = () => {
@@ -6112,13 +6041,11 @@ Analyzed & Deobfuscated By: VXAZ
     };
     d();
   }
-  ;
   function em(a) {
     if (a != null) {
       return a >= unsignedMinSafeInteger && a <= unsignedMaxSafeInteger ? Number(a) : String(a);
     }
   }
-  ;
   function gm(a) {
     var b = K($d).j(wi.g, wi.defaultValue);
     if (!(window !== window.top || window.__uspapi || window.frames.__uspapiLocator)) {
@@ -6206,7 +6133,7 @@ Analyzed & Deobfuscated By: VXAZ
     }
   }
   function km(a) {
-    if (!a?.g() || ((y(a.A, 1) == null || typeof y(a.A, 1) === "string" ? y(a.A, 1) : undefined) ?? "").length === 0 || B(a, am, 2, undefined === ob ? 2 : 4).length === 0) {
+    if (!a?.g() || ((y(a.A, 1) == null || typeof y(a.A, 1) === "string" ? y(a.A, 1) : undefined) ?? "").length === 0 || B(a, am, 2, 4).length === 0) {
       return null;
     }
     const b = (y(a.A, 1) == null || typeof y(a.A, 1) === "string" ? y(a.A, 1) : undefined) ?? "";
@@ -6217,7 +6144,7 @@ Analyzed & Deobfuscated By: VXAZ
     } catch (e) {
       return null;
     }
-    a = B(a, am, 2, undefined === ob ? 2 : 4).reduce((e, f) => {
+    a = B(a, am, 2, 4).reduce((e, f) => {
       var g = pc(e, Hl, 2) ? A(e, Hl, 2) : Gl();
       g = Lc(g, 1) ?? mc;
       g = g >= unsignedMinSafeInteger && g <= unsignedMaxSafeInteger ? Number(g) : String(g);
@@ -6225,7 +6152,7 @@ Analyzed & Deobfuscated By: VXAZ
       h = Lc(h, 1) ?? mc;
       return g > (h >= unsignedMinSafeInteger && h <= unsignedMaxSafeInteger ? Number(h) : String(h)) ? e : f;
     });
-    d = rc(d, 3, Qb, undefined === ob ? 2 : 4).indexOf(Qb(y(a.A, 1)) ?? 0);
+    d = rc(d, 3, Qb, 4).indexOf(Qb(y(a.A, 1)) ?? 0);
     return d === -1 || d >= c.length ? null : {
       uspString: cm(c[d], Qb(y(a.A, 1)) ?? 0),
       wa: Il(pc(a, Hl, 2) ? A(a, Hl, 2) : Gl())
@@ -6254,7 +6181,7 @@ Analyzed & Deobfuscated By: VXAZ
       }
       if (a = d) {
         d = A(a, Ql, 5) || null;
-        a = B(a, Pl, 7, undefined === ob ? 2 : 4);
+        a = B(a, Pl, 7, 4);
         a = mm(a ?? []);
         d = {
           Sa: d,
@@ -6295,14 +6222,13 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function pm(a) {
     const b = {};
-    Pd(nm, (c, d) => {
+    isPropInObject(nm, (c, d) => {
       if (d in a) {
         b[d] = a[d];
       }
     });
     return b;
   }
-  ;
   function rm(a) {
     const b = /[a-zA-Z0-9._~-]/;
     const c = /%[89a-zA-Z]./;
@@ -6325,9 +6251,8 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return b;
   }
-  ;
   function tm(a) {
-    a = rc(a, 2, Ob, undefined === ob ? 2 : 4);
+    a = rc(a, 2, Ob, 4);
     if (!a) {
       return false;
     }
@@ -6377,7 +6302,6 @@ Analyzed & Deobfuscated By: VXAZ
       a = a.substring(0, a.lastIndexOf("/"));
     }
   }
-  ;
   function wm(a) {
     a = a.google_ad_modifications = a.google_ad_modifications || {};
     const b = a.space_collapsing || "none";
@@ -6404,15 +6328,13 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return a.afg_slotcar_vars;
   }
-  ;
-  ;
   const Cm = [2, 7, 1];
   function Dm(a, b, c, d = "") {
-    return b === 1 && c && (Em(a, d, c)?.j() ?? false) ? true : Fm(a, d, e => La(B(e, ed, 2, undefined === ob ? 2 : 4), f => (y(f.A, 1) == null ? y(f.A, 1) : Number.isFinite(y(f.A, 1)) ? y(f.A, 1) | 0 : undefined) === b), K($d).j(Ci.g, Ci.defaultValue) ? !!A(c, Gm, 26)?.g() : Mc(c, 6) ?? false);
+    return b === 1 && c && (Em(a, d, c)?.j() ?? false) ? true : Fm(a, d, e => La(B(e, ed, 2, 4), f => (y(f.A, 1) == null ? y(f.A, 1) : Number.isFinite(y(f.A, 1)) ? y(f.A, 1) | 0 : undefined) === b), K($d).j(Ci.g, Ci.defaultValue) ? !!A(c, Gm, 26)?.g() : Mc(c, 6) ?? false);
   }
   function Hm(a, b) {
     const c = (Jd(window.top) ? window.top : null) || window;
-    return Im(c, a) ? true : Fm(window, "", d => La(rc(d, 3, Ob, undefined === ob ? 2 : 4), e => e === a), b);
+    return Im(c, a) ? true : Fm(window, "", d => La(rc(d, 3, Ob, 4), e => e === a), b);
   }
   function Im(a, b) {
     a = (a = (a = a.location && a.location.hash) && a.match(/forced_clientside_labs=([\d,]+)/)) && a[1];
@@ -6429,7 +6351,7 @@ Analyzed & Deobfuscated By: VXAZ
   function Jm(a, b) {
     a = Km(a, b);
     const c = {};
-    Pd(a, (d, e) => {
+    isPropInObject(a, (d, e) => {
       try {
         const f = bd(fd, ec(d));
         c[e] = f;
@@ -6458,7 +6380,7 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function Mm(a, b) {
     const c = [];
-    a = (self.google_ad_modifications = self.google_ad_modifications || {})?.head_tag_slot_vars?.google_ad_host ?? self.document?.querySelector("meta[name=\"google-adsense-platform-account\"]")?.getAttribute("content") ?? null ? Cm : (a = Em(self, a, b)?.C()) ? [...rc(a, 3, Ob, undefined === ob ? 2 : 4)] : Cm;
+    a = (self.google_ad_modifications = self.google_ad_modifications || {})?.head_tag_slot_vars?.google_ad_host ?? self.document?.querySelector("meta[name=\"google-adsense-platform-account\"]")?.getAttribute("content") ?? null ? Cm : (a = Em(self, a, b)?.C()) ? [...rc(a, 3, Ob, 4)] : Cm;
     if (!a.includes(1)) {
       c.push(1);
     }
@@ -6478,7 +6400,6 @@ Analyzed & Deobfuscated By: VXAZ
     a = A(c, Tp, Dc(c, Up) === 27 ? 27 : -1)?.g()?.g() === b && a.location.host && ((y(c.A, 17) == null || typeof y(c.A, 17) === "string" ? y(c.A, 17) : undefined) ?? "") === a.location.host;
     return d === b || a ? A(c, Tp, Dc(c, Up) === 27 ? 27 : -1) : null;
   }
-  ;
   function Om(a, b, c, d) {
     Pm(new Qm(a, b, c, d));
   }
@@ -6547,11 +6468,11 @@ Analyzed & Deobfuscated By: VXAZ
     if (((a.l.google_ad_modifications = a.l.google_ad_modifications || {})?.head_tag_slot_vars?.google_ad_host ?? a.l.document?.querySelector("meta[name=\"google-adsense-platform-account\"]")?.getAttribute("content") ?? null) && !(Mc(a.g, 22) ?? false)) {
       return new oh(null, Error("invtag"));
     }
-    if (a = (a = Em(a.l, a.j, a.g)?.B()) && B(a, Nh, 1, undefined === ob ? 2 : 4).length > 0 ? a : null) {
+    if (a = (a = Em(a.l, a.j, a.g)?.B()) && B(a, Nh, 1, 4).length > 0 ? a : null) {
       var b = new sj();
-      var c = B(a, Nh, 1, undefined === ob ? 2 : 4);
+      var c = B(a, Nh, 1, 4);
       b = Jc(b, 1, c);
-      a = B(a, nj, 2, undefined === ob ? 2 : 4);
+      a = B(a, nj, 2, 4);
       a = Jc(b, 7, a);
       a = new oh({
         value: a
@@ -6596,10 +6517,9 @@ Analyzed & Deobfuscated By: VXAZ
       this.i = d;
     }
   }
-  ;
   function Ym(a, b, c, d) {
     try {
-      const f = um(a, B(c, nj, 7, undefined === ob ? 2 : 4));
+      const f = um(a, B(c, nj, 7, 4));
       if (f && tm(f)) {
         if ((y(f.A, 4) == null || typeof y(f.A, 4) === "string" ? y(f.A, 4) : undefined) ?? undefined) {
           const h = new Eh(null, {
@@ -6629,8 +6549,6 @@ Analyzed & Deobfuscated By: VXAZ
       });
     }
   }
-  ;
-  ;
   function an(a, b) {
     if (!a) {
       return false;
@@ -6647,12 +6565,11 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function bn(a) {
     let b = "";
-    Pd(a.split("_"), c => {
+    isPropInObject(a.split("_"), c => {
       b += c.substr(0, 2);
     });
     return b;
   }
-  ;
   var Gm = class extends J {
     g() {
       return Mc(this, 1) ?? false;
@@ -6697,7 +6614,6 @@ Analyzed & Deobfuscated By: VXAZ
     Hc(b, 1, a);
     return b;
   }
-  ;
   function fn() {
     const a = {};
     if (K($d).i(bi.g, bi.defaultValue)) {
@@ -6705,7 +6621,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return a;
   }
-  ;
   class gn {
     constructor() {
       this.promise = new Promise((a, b) => {
@@ -6714,7 +6629,6 @@ Analyzed & Deobfuscated By: VXAZ
       });
     }
   }
-  ;
   function hn() {
     const {
       promise: a,
@@ -6725,7 +6639,6 @@ Analyzed & Deobfuscated By: VXAZ
       resolve: b
     };
   }
-  ;
   function jn(a = () => {}) {
     if (!self.google_llp) {
       self.google_llp = {};
@@ -6745,7 +6658,7 @@ Analyzed & Deobfuscated By: VXAZ
       Ld(self.document, a);
     }).promise;
   }
-  ;
+
   /*
     Array.from({
       length: 11
@@ -6820,7 +6733,7 @@ Analyzed & Deobfuscated By: VXAZ
       google_ad_client: a.google_ad_client
     };
     const c = b.enable_page_level_ads;
-    Pd(a, (d, e) => {
+    isPropInObject(a, (d, e) => {
       if (cj[e] && e !== "google_ad_client") {
         c[e] = d;
       }
@@ -6892,7 +6805,7 @@ Analyzed & Deobfuscated By: VXAZ
       d.ablationFromStorage = !!A(c, rj, 24)?.g()?.g();
     }
     if (ka(b.enable_page_level_ads) && b.enable_page_level_ads.google_pgb_reactive === 7) {
-      if (!um(a, B(c, nj, 7, undefined === ob ? 2 : 4))) {
+      if (!um(a, B(c, nj, 7, 4))) {
         kk("amaait", {
           value: "true"
         });
@@ -6917,7 +6830,6 @@ Analyzed & Deobfuscated By: VXAZ
       Ym(a, b.google_ad_client || "", c, f);
     }, undefined);
   }
-  ;
   function tn(a, b) {
     a = a.document;
     var c = undefined;
@@ -6944,15 +6856,12 @@ Analyzed & Deobfuscated By: VXAZ
       Nb: d
     };
   }
-  ;
   function un({
     va: a,
     Ba: b
   }) {
     return a || (b === "dev" ? "dev" : "");
   }
-  ;
-  ;
   var wn = {
     "120x90": true,
     "160x90": true,
@@ -6985,7 +6894,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return null;
   }
-  ;
   var yn = class extends J {
     getVersion() {
       return (y(this.A, 2) == null || typeof y(this.A, 2) === "string" ? y(this.A, 2) : undefined) ?? "";
@@ -7018,7 +6926,6 @@ Analyzed & Deobfuscated By: VXAZ
   function Mn() {
     return Kn()?.then(a => Ln(a)) ?? null;
   }
-  ;
   function Nn(a, b) {
     if (!b.google_ad_host) {
       if (a = a.document?.querySelector("meta[name=\"google-adsense-platform-account\"]")?.getAttribute("content") ?? null) {
@@ -7231,7 +7138,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     Zd();
   }
-  ;
   var Wn = class {
     constructor(a, b) {
       this.g = a;
@@ -7327,14 +7233,14 @@ Analyzed & Deobfuscated By: VXAZ
       var f = Number(c[g]);
       if (Number.isNaN(f) || f === 0) {
         return {
-          X: `Wrong value '${c[g]}' for ${"data-matched-content-rows-num"}.`
+          X: "Wrong value '".concat(c[g], "' for ", "data-matched-content-rows-num", ".")
         };
       }
       d.push(f);
       f = Number(a[g]);
       if (Number.isNaN(f) || f === 0) {
         return {
-          X: `Wrong value '${a[g]}' for ${"data-matched-content-columns-num"}.`
+          X: "Wrong value '".concat(a[g], "' for ", "data-matched-content-columns-num", ".")
         };
       }
       e.push(f);
@@ -7350,11 +7256,11 @@ Analyzed & Deobfuscated By: VXAZ
     return a > 1500 ? {
       width: 0,
       height: 0,
-      Ib: `Calculated slot width is too large: ${a}`
+      Ib: "Calculated slot width is too large: ".concat(a)
     } : b > 1500 ? {
       width: 0,
       height: 0,
-      Ib: `Calculated slot height is too large: ${b}`
+      Ib: "Calculated slot height is too large: ".concat(b)
     } : {
       width: a,
       height: b
@@ -7368,8 +7274,6 @@ Analyzed & Deobfuscated By: VXAZ
       height: Math.floor(c / 1.91 + 70) + Math.floor((c * 0.2617801047120419 + 0) * b + 8 * b + 8)
     };
   }
-  ;
-  const fo = Pa("script");
   var go = class {
     constructor(a, b, c = null, d = null, e = null, f = null, g = null, h = null, k = null, n = null, l = null, m = null) {
       this.D = a;
@@ -7565,7 +7469,7 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function ko(a, b) {
     if (a <= 0) {
-      throw new T(`Invalid responsive width from Matched Content slot ${b.google_ad_slot}: ${a}. Please ensure to put this Matched Content slot into a non-zero width div container.`);
+      throw new T("Invalid responsive width from Matched Content slot ".concat(b.google_ad_slot, ": ", a, ". Please ensure to put this Matched Content slot into a non-zero width div container."));
     }
   }
   function lo(a, b) {
@@ -7573,7 +7477,6 @@ Analyzed & Deobfuscated By: VXAZ
     a.google_content_recommendation_columns_num = b.K;
     a.google_content_recommendation_rows_num = b.L;
   }
-  ;
   var no = class extends Wn {
     i() {
       return this.g;
@@ -7635,13 +7538,13 @@ Analyzed & Deobfuscated By: VXAZ
       }
     }
     if (a < 250) {
-      throw new T("Fluid responsive ads must be at least 250px wide: " + `availableWidth=${a}`);
+      throw new T("Fluid responsive ads must be at least 250px wide: ".concat("availableWidth=", a));
     }
     a = Math.min(1200, Math.floor(a));
     if (d && f !== "in-article") {
       f = Math.ceil(d);
       if (f < 50) {
-        throw new T("Fluid responsive ads must be at least 50px tall: " + `height=${f}`);
+        throw new T("Fluid responsive ads must be at least 50px tall: ".concat("height=", f));
       }
       return new go(11, new Wn(a, f));
     }
@@ -7687,7 +7590,6 @@ Analyzed & Deobfuscated By: VXAZ
     b = f !== "in-article" || c || a !== b ? Math.ceil(d(a)) : Math.ceil(d(a) * 1.25);
     return new go(11, f === "in-article" ? new po(a, b) : new Wn(a, b));
   }
-  ;
   function ro(a) {
     return b => {
       for (let c = a.length - 1; c >= 0; --c) {
@@ -7715,7 +7617,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return e;
   }
-  ;
   var Z = new Array(17);
   Z[0] = new Y(970, 90, 2);
   Z[1] = new Y(728, 90, 2);
@@ -7835,7 +7736,7 @@ Analyzed & Deobfuscated By: VXAZ
     }
     const m = so(ro(l), ro(n));
     if (!m) {
-      throw new T(`No slot size for availableWidth=${a}`);
+      throw new T("No slot size for availableWidth=".concat(a));
     }
     const {
       V: p,
@@ -7935,7 +7836,6 @@ Analyzed & Deobfuscated By: VXAZ
     b = qo(a, b, c, f, e).size();
     return b.g * b.height() > a * d.height() ? new Y(b.g, b.height(), 1) : d;
   }
-  ;
   function Bo(a, b, c, d, e) {
     var f;
     if (f = Ji(b).clientWidth ?? undefined) {
@@ -7979,7 +7879,6 @@ Analyzed & Deobfuscated By: VXAZ
     } = xo(g, "auto", b, c, e, true);
     return new go(1, k, l, 2, true, h, n);
   }
-  ;
   function Co(a) {
     const b = a.google_ad_format;
     if (b === "autorelaxed") {
@@ -8086,8 +7985,8 @@ Analyzed & Deobfuscated By: VXAZ
           value: "DUMMY_AD"
         }]
       });
-      c.dash = `<${fo}>window.top.postMessage('${f}', '*'); 
-          </${fo}> 
+      c.dash = `<${"script"}>window.top.postMessage('${f}', '*'); 
+          </${"script"}> 
           <div id="dummyAd" style="width:${d}px;height:${g}px; 
             background:#ddd;border:3px solid #f00;box-sizing:border-box; 
             color:#000;"> 
@@ -8130,7 +8029,6 @@ Analyzed & Deobfuscated By: VXAZ
     a.google_ad_format = "auto";
     a.armr = 3;
   }
-  ;
   function Go(a, b) {
     a.google_resizing_allowed = true;
     a.ovlp = true;
@@ -8138,7 +8036,6 @@ Analyzed & Deobfuscated By: VXAZ
     a.iaaso = true;
     a.armr = b;
   }
-  ;
   function Ho(a, b) {
     var c = Jd(b.top) ? b.top : null;
     if (c) {
@@ -8158,31 +8055,25 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return -1;
   }
-  ;
-  function Io(a, b) {
-    switch (a) {
-      case "google_reactive_ad_format":
-        a = parseInt(b, 10);
-        return isNaN(a) ? 0 : a;
-      default:
-        return b;
-    }
-  }
-  function Jo(a, b) {
+  function logGElementAttributes(a, b) {
     if (a.getAttribute("src")) {
       var c = a.getAttribute("src") || "";
-      const d = Fd(c, "client");
+      var d = Fd(c, "client");
       if (d) {
-        b.google_ad_client = Io("google_ad_client", d);
+        b.google_ad_client = d;
       }
       if (c = Fd(c, "host")) {
-        b.google_ad_host = Io("google_ad_host", c);
+        b.google_ad_host = c;
       }
     }
-    for (const d of a.attributes) if (/data-/.test(d.name)) {
+    for (var d of a.attributes) if (/data-/.test(d.name)) {
       a = /^[\s\xa0]*([\s\S]*?)[\s\xa0]*$/.exec(d.name.replace("data-matched-content", "google_content_recommendation").replace("data", "google").replace(/-/g, "_"))[1];
       if (!b.hasOwnProperty(a)) {
-        c = Io(a, d.value);
+        if (a == "google_reactive_ad_format") {
+          c = isNaN(parseInt(d.value, 10)) ? 0 : parseInt(d.value, 10);
+        } else {
+          c = d.value;
+        }
         if (c !== null) {
           b[a] = c;
         }
@@ -8204,7 +8095,7 @@ Analyzed & Deobfuscated By: VXAZ
     }
   }
   function Lo(a, b, c, d) {
-    Jo(a, b);
+    logGElementAttributes(a, b);
     if (c.document && c.document.body && !Co(b) && !b.google_reactive_ad_format && !b.google_ad_intent_query) {
       var e = parseInt(a.style.width, 10);
       var f = Ho(a, c);
@@ -8303,7 +8194,6 @@ Analyzed & Deobfuscated By: VXAZ
       }
     }
   }
-  ;
   function Mo(a) {
     if (a === a.top) {
       return 0;
@@ -8324,7 +8214,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return 1;
   }
-  ;
   function No(a, b, c) {
     for (const f of b) a: {
       b = a;
@@ -8395,7 +8284,6 @@ Analyzed & Deobfuscated By: VXAZ
       return d - e;
     });
   }
-  ;
   function rg(a, b, c = 0) {
     if (!(a.g.size > 0)) {
       Qo(a);
@@ -8458,7 +8346,6 @@ Analyzed & Deobfuscated By: VXAZ
       this.g = new Map();
     }
   };
-  ;
   function Wo(a) {
     const b = a.g.pc;
     return b !== null && b !== 0 ? b : a.g.pc = be(a.l);
@@ -8604,7 +8491,6 @@ Analyzed & Deobfuscated By: VXAZ
   function gp() {
     return self.google_adtest === "on" || self.google_adbreak_test === "on" || window.location.host.endsWith("h5games.usercontent.goog") || window.location.host === "gamesnacks.com" ? window.document.querySelector("meta[name=\"h5-games-eids\"]")?.getAttribute("content")?.split(",").map(b => Math.floor(Number(b))).filter(b => !isNaN(b) && b > 0) || [] : [];
   }
-  ;
   function testScriptSource(a) {
     var b = window.document;
     if (b.currentScript) {
@@ -8615,7 +8501,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return 1;
   }
-  ;
   function jp(a, b) {
     const c = K($d).j(Ci.g, Ci.defaultValue) ? !!A(b, Gm, 26)?.g() : Mc(b, 6) ?? false;
     return {
@@ -8632,25 +8517,6 @@ Analyzed & Deobfuscated By: VXAZ
       }
     };
   }
-  ;
-  function kp(a = self) {
-    return a.ggeac || (a.ggeac = {});
-  }
-  ;
-  function lp(a, b = document) {
-    return !!b.featurePolicy?.features().includes(a);
-  }
-  function mp(a, b = document) {
-    return !!b.featurePolicy?.allowedFeatures().includes(a);
-  }
-  function np(a, b = navigator) {
-    try {
-      return !!b.protectedAudience?.queryFeatureSupport?.(a);
-    } catch (c) {
-      return false;
-    }
-  }
-  ;
   function op(a, b) {
     try {
       const d = a.split(".");
@@ -8705,9 +8571,15 @@ Analyzed & Deobfuscated By: VXAZ
           return !!self.matchMedia(a).matches;
         } catch {}
       },
-      69: a => lp(a, self.document),
-      70: a => mp(a, self.document),
-      79: a => np(a, self.navigator)
+      69: a => !!self.document.featurePolicy?.features().includes(a),
+      70: a => !!self.document.featurePolicy?.allowedFeatures().includes(a),
+      79: a => {
+        try {
+          return !!self.navigator.protectedAudience?.queryFeatureSupport?.(a);
+        } catch (c) {
+          return false;
+        }
+      }
     },
     4: {
       3: () => Vd(),
@@ -8770,28 +8642,28 @@ Analyzed & Deobfuscated By: VXAZ
       } = e[e.length - 1];
       c.set(d, h + k * n);
     }
-    for (const f of b) for (const g of B(f, sp, 2, undefined === ob ? 2 : 4)) if (B(g, qp, 2, undefined === ob ? 2 : 4).length !== 0) {
+    for (const f of b) for (const g of B(f, sp, 2, 4)) if (B(g, qp, 2, 4).length !== 0) {
       b = Rb(y(g.A, 8)) ?? 0;
       if (!(!((y(g.A, 4) == null ? y(g.A, 4) : Number.isFinite(y(g.A, 4)) ? y(g.A, 4) | 0 : undefined) ?? 0) || ((y(g.A, 13) == null ? y(g.A, 13) : Number.isFinite(y(g.A, 13)) ? y(g.A, 13) | 0 : undefined) ?? 0) || ((y(g.A, 14) == null ? y(g.A, 14) : Number.isFinite(y(g.A, 14)) ? y(g.A, 14) | 0 : undefined) ?? 0))) {
         b = c.get((y(g.A, 4) == null ? y(g.A, 4) : Number.isFinite(y(g.A, 4)) ? y(g.A, 4) | 0 : undefined) ?? 0) ?? 0;
-        d = (Rb(y(g.A, 1)) ?? 0) * B(g, qp, 2, undefined === ob ? 2 : 4).length;
+        d = (Rb(y(g.A, 1)) ?? 0) * B(g, qp, 2, 4).length;
         c.set((y(g.A, 4) == null ? y(g.A, 4) : Number.isFinite(y(g.A, 4)) ? y(g.A, 4) | 0 : undefined) ?? 0, b + d);
       }
       d = [];
-      for (e = 0; e < B(g, qp, 2, undefined === ob ? 2 : 4).length; e++) {
+      for (e = 0; e < B(g, qp, 2, 4).length; e++) {
         const h = {
           bb: b,
           Ya: Rb(y(g.A, 1)) ?? 0,
-          Za: B(g, qp, 2, undefined === ob ? 2 : 4).length,
+          Za: B(g, qp, 2, 4).length,
           Ab: e,
           fa: (y(f.A, 1) == null ? y(f.A, 1) : Number.isFinite(y(f.A, 1)) ? y(f.A, 1) | 0 : undefined) ?? 0,
           oa: g,
-          T: B(g, qp, 2, undefined === ob ? 2 : 4)[e]
+          T: B(g, qp, 2, 4)[e]
         };
         d.push(h);
       }
       if (!(yp(a[2], (y(g.A, 10) == null ? y(g.A, 10) : Number.isFinite(y(g.A, 10)) ? y(g.A, 10) | 0 : undefined) ?? 0, d) || yp(a[1], (y(g.A, 4) == null ? y(g.A, 4) : Number.isFinite(y(g.A, 4)) ? y(g.A, 4) | 0 : undefined) ?? 0, d))) {
-        yp(a[0], B(g, qp, 2, undefined === ob ? 2 : 4)[0].getId(), d);
+        yp(a[0], B(g, qp, 2, 4)[0].getId(), d);
       }
     }
     return a;
@@ -8806,11 +8678,9 @@ Analyzed & Deobfuscated By: VXAZ
     a.get(b).push(...c);
     return true;
   }
-  ;
   function zp(a = Od()) {
     return b => Qd(`${b} + ${a}`) % 1E3;
   }
-  ;
   const Ap = [12, 13, 20];
   function Bp(a, b) {
     var c = K(zg).N;
@@ -8903,7 +8773,7 @@ Analyzed & Deobfuscated By: VXAZ
       d = m.getId();
       e.push(d);
       Cp(a, d, f ? 4 : c);
-      Pg(B(m, jf, 2, undefined === ob ? 2 : 4), f ? Rg() : [c], a.M, d);
+      Pg(B(m, jf, 2, 4), f ? Rg() : [c], a.M, d);
     }
     vg(a.M, b, c, e, g, 1);
     return e;
@@ -8956,23 +8826,22 @@ Analyzed & Deobfuscated By: VXAZ
   function Jp(a) {
     K(Ip).g(a);
   }
-  ;
   function Kp({
     tb: a,
     N: b,
     config: c,
-    mb: d = kp(),
+    mb: d = self.ggeac || (self.ggeac = {}),
     nb: e = 0,
     M: f = new yg(em(A(a, up, 5)?.g()) ?? 0, em(A(a, up, 5)?.j()) ?? 0, A(a, up, 5)?.u() ?? false),
     ja: g = xp({
       0: new Map(),
       1: new Map(),
       2: new Map()
-    }, B(a, tp, 2, ob === ob ? 2 : 4))
+    }, B(a, tp, 2, 2))
   }) {
     if (d.hasOwnProperty("init-done")) {
-      (d[a] || (() => {}))(B(a, tp, 2, undefined === ob ? 2 : 4).map(h => w(h)));
-      (d[a] || (() => {}))(B(a, jf, 1, undefined === ob ? 2 : 4).map(h => w(h)), e);
+      (d[a] || (() => {}))(B(a, tp, 2, 4).map(h => w(h)));
+      (d[a] || (() => {}))(B(a, jf, 1, 4).map(h => w(h)), e);
       if (b) {
         (d[a] || (() => {}))(b);
       }
@@ -8983,7 +8852,7 @@ Analyzed & Deobfuscated By: VXAZ
       Vg(d);
       Wg(d);
       Lp(e, d);
-      Pg(B(a, jf, 1, ob === ob ? 2 : 4), [e], f, undefined, true);
+      Pg(B(a, jf, 1, 2), [e], f, undefined, true);
       Ag = Ag || !(!c || !c.yb);
       Jp(pp);
       if (b) {
@@ -8991,7 +8860,7 @@ Analyzed & Deobfuscated By: VXAZ
       }
     }
   }
-  function Lp(a, b = kp()) {
+  function Lp(a, b = self.ggeac || (self.ggeac = {})) {
     Xg(K(Yg), b, a);
     Mp(b, a);
     Hp(K(Ip), b);
@@ -9008,7 +8877,6 @@ Analyzed & Deobfuscated By: VXAZ
       (a[a] || (() => {}))(b);
     };
   }
-  ;
   function Np(a, b) {
     b = {
       0: zp(be(b).toString())
@@ -9020,7 +8888,7 @@ Analyzed & Deobfuscated By: VXAZ
   function Op(a, b, c) {
     var d = a.google_ad_modifications = a.google_ad_modifications || {};
     if (d.plle) {
-      Lp(1, kp(a));
+      Lp(1, a.ggeac || (a.ggeac = {}));
     } else {
       d.plle = true;
       d = A(b, vp, 12);
@@ -9032,14 +8900,14 @@ Analyzed & Deobfuscated By: VXAZ
           ya: e && !!a.google_disable_experiments,
           yb: e
         },
-        mb: kp(a),
+        mb: a.ggeac || (a.ggeac = {}),
         nb: 1
       });
       if (c = (y(b.A, 15) == null || typeof y(b.A, 15) === "string" ? y(b.A, 15) : undefined) ?? "") {
         c = Number(c);
         K(Yg).j(c);
       }
-      for (const f of rc(b, 19, Qb, undefined === ob ? 2 : 4)) K(Yg).i(f);
+      for (const f of rc(b, 19, Qb, 4)) K(Yg).i(f);
       Np(12, a);
       Np(10, a);
       a = (Jd(a.top) ? a.top : null) || a;
@@ -9048,7 +8916,6 @@ Analyzed & Deobfuscated By: VXAZ
       }
     }
   }
-  ;
   function Pp(a) {
     dk.B(b => {
       b.shv = String(a);
@@ -9065,7 +8932,6 @@ Analyzed & Deobfuscated By: VXAZ
     a = b?.g()?.g() || ((y(a.A, 2) == null || typeof y(a.A, 2) === "string" ? y(a.A, 2) : undefined) ?? "");
     Pp(a);
   }
-  ;
   var Rp = {
     google_pause_ad_requests: true,
     google_user_agent_client_hint: true
@@ -9113,7 +8979,6 @@ Analyzed & Deobfuscated By: VXAZ
     }
     return new Vp();
   }
-  ;
   function Xp(a, b) {
     if (Mc(b, 22) ?? false) {
       return 7;
@@ -9139,7 +9004,6 @@ Analyzed & Deobfuscated By: VXAZ
       b.abgtt = Xp(a, c);
     }
   }
-  ;
   function Zp(a, b) {
     var c = new $p();
     try {
@@ -9167,7 +9031,6 @@ Analyzed & Deobfuscated By: VXAZ
       });
     }
   }
-  ;
   var $p = class {
     constructor() {
       this.g = dk;
@@ -9190,7 +9053,6 @@ Analyzed & Deobfuscated By: VXAZ
       }
     });
   }
-  ;
   function eq() {
     const a = new Set();
     const b = isApiReady();
@@ -9215,13 +9077,13 @@ Analyzed & Deobfuscated By: VXAZ
       case 2:
         const d = iq(a);
         if (d) {
-          return c.some(f => jq(d, f));
+          return c.some(f => compareElementAreas(d, f));
         }
         break;
       case 1:
         const e = kq(a);
         if (e) {
-          return b.some(f => jq(e, f));
+          return b.some(f => compareElementAreas(e, f));
         }
     }
     return false;
@@ -9254,8 +9116,8 @@ Analyzed & Deobfuscated By: VXAZ
       return c ? d && d.width * d.height !== 0 ? d.top < c.top ? d : c : c : d;
     }, null);
   }
-  function jq(a, b) {
-    const c = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+  function compareElementAreas(a, b) {
+    var c = Math.min(a.right, b.right) - Math.max(a.left, b.left);
     a = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
     return c <= 0 || a <= 0 ? false : c * a * 100 / ((b.right - b.left) * (b.bottom - b.top)) >= 50;
   }
@@ -9271,7 +9133,8 @@ Analyzed & Deobfuscated By: VXAZ
     if (K($d).j(zi.g, zi.defaultValue)) {
       var b = window;
       if (!b.google_plmetrics && window.PerformanceObserver) {
-        b.google_plmetrics = true;
+        // Unnecessary Assignment: Object(b)[Member(google_plmetrics)] = true
+        // b.google_plmetrics = true;
         b = ["layout-shift", "largest-contentful-paint", "first-input", "longtask"];
         if (a.gb.qb) {
           b.push("event");
@@ -9284,7 +9147,7 @@ Analyzed & Deobfuscated By: VXAZ
           if (c === "event") {
             b.durationThreshold = 40;
           }
-          sq(a).observe(b);
+          measurePerformance(a).observe(b);
         }
         tq(a);
       }
@@ -9326,7 +9189,7 @@ Analyzed & Deobfuscated By: VXAZ
       }
     }
   }
-  function sq(a) {
+  function measurePerformance(a) {
     if (!a.M) {
       a.M = new PerformanceObserver(Dj(640, b => {
         uq(a, b);
@@ -9353,13 +9216,13 @@ Analyzed & Deobfuscated By: VXAZ
     a.Da = () => {
       document.removeEventListener("visibilitychange", b);
       document.removeEventListener("pagehide", c);
-      sq(a).disconnect();
+      measurePerformance(a).disconnect();
     };
   }
   function postAnalytics(a) {
     if (!a.La) {
       a.La = true;
-      sq(a).takeRecords();
+      measurePerformance(a).takeRecords();
       var analyticsEndpoint = "https://pagead2.googlesyndication.com/pagead/gen_204?id=plmetrics";
       if (window.LayoutShift) {
         analyticsEndpoint += "&cls=".concat(a.D.toFixed(3));
@@ -9525,7 +9388,7 @@ Analyzed & Deobfuscated By: VXAZ
         ym(e.google_pgb_reactive === 7);
       }
       b.google_unique_id = re(window);
-      Pd(Rp, (f, g) => {
+      isPropInObject(Rp, (f, g) => {
         b[g] = b[g] || window[g];
       });
       if (b.google_loader_used !== "sd") {
@@ -9616,7 +9479,7 @@ Analyzed & Deobfuscated By: VXAZ
   function Lq(a, b) {
     const c = {};
     const d = Mm(a.google_ad_client, b);
-    Pd(Ii, (g, h) => {
+    isPropInObject(Ii, (g, h) => {
       if (a.enable_page_level_ads === false) {
         c[h] = false;
       } else if (a.hasOwnProperty(h)) {
@@ -9681,11 +9544,11 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function Pq(a) {
     delete a.google_checked_head;
-    Pd(a, (b, c) => {
+    isPropInObject(a, (b, c) => {
       if (!cj[c]) {
         delete a[c];
         b = c.replace("google", "data").replace(/_/g, "-");
-        self.console.warn(`AdSense head tag doesn't support ${b} attribute.`);
+        self.console.warn("AdSense head tag doesn't support ".concat(b, " attribute."));
       }
     });
   }
@@ -9695,14 +9558,14 @@ Analyzed & Deobfuscated By: VXAZ
       c.setAttribute("data-checked-head", "true");
       var d = window.google_ad_modifications = window.google_ad_modifications || {};
       if (d.head_tag_slot_vars) {
-        Rq(c);
+        validateGAdClientVariables(c);
       } else {
         $o(g => {
           g = Ec(g, zf, 3);
           yc(g, 7, Kb(true), false);
         });
         var e = {};
-        Jo(c, e);
+        logGElementAttributes(c, e);
         Pq(e);
         if (e.google_ad_intent_query) {
           e.google_responsive_auto_format = 17;
@@ -9745,7 +9608,7 @@ Analyzed & Deobfuscated By: VXAZ
       }
     }
   }
-  function Rq(a) {
+  function validateGAdClientVariables(a) {
     const b = (window.google_ad_modifications = window.google_ad_modifications || {}).head_tag_slot_vars;
     const c = a.getAttribute("src") || "";
     if ((a = Fd(c, "client") || a.getAttribute("data-ad-client") || "") && a !== b.google_ad_client) {
@@ -9817,7 +9680,7 @@ Analyzed & Deobfuscated By: VXAZ
         Wq(a, d);
       } else {
         if (e = a.params) {
-          Pd(e, (f, g) => {
+          isPropInObject(e, (f, g) => {
             b[g] = f;
           });
         }
@@ -9826,9 +9689,9 @@ Analyzed & Deobfuscated By: VXAZ
         } else {
           Yp(Mq(a) || (window.google_ad_client ? String(window.google_ad_client) : (window.google_ad_modifications = window.google_ad_modifications || {}).head_tag_slot_vars?.google_ad_client ?? window.document.querySelector(".adsbygoogle[data-ad-client]")?.getAttribute("data-ad-client") ?? ""), b, d);
           e = Xq(b, a);
-          Jo(e, b);
+          logGElementAttributes(e, b);
           c = (self.google_ad_modifications = self.google_ad_modifications || {}).head_tag_slot_vars || {};
-          Pd(c, (f, g) => {
+          isPropInObject(c, (f, g) => {
             if (!b.hasOwnProperty(g)) {
               b[g] = f;
             }
@@ -9940,7 +9803,7 @@ Analyzed & Deobfuscated By: VXAZ
     return b;
   }
   function Zq(a) {
-    Rk().S[Vk[a] || `google_ps_${26}`] = !!Number(a);
+    Rk().S[Vk[a] || "google_ps_".concat(26)] = !!Number(a);
   }
   function $q(a) {
     if (Number(a)) {
@@ -10046,7 +9909,6 @@ Analyzed & Deobfuscated By: VXAZ
       Bq.set(b, d);
     }
   }
-  ;
   (function (a, b, c) {
     var d = () => {};
     var c = function (a) {
