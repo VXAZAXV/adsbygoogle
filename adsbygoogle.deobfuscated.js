@@ -8,6 +8,8 @@ Analyzed & Deobfuscated By: VXAZ
   var unsignedMaxSafeInteger = BigInt(Number.MAX_SAFE_INTEGER);
   var unsignedMinSafeInteger = BigInt(Number.MIN_SAFE_INTEGER);
   var navUserAgent = self.navigator && self.navigator.userAgent;
+  var sharedObject = {};
+  var emptyObject = {};
   var da = {};
   var ea = {};
   function fa(a, b, c) {
@@ -125,7 +127,7 @@ Analyzed & Deobfuscated By: VXAZ
       throw a;
     }, 0);
   }
-  function ua(a, b) {
+  function parseString_ExtractInt(a, b) {
     let c = 0;
     a = /^[\s\xa0]*([\s\S]*?)[\s\xa0]*$/.exec(String(a))[1].split(".");
     b = /^[\s\xa0]*([\s\S]*?)[\s\xa0]*$/.exec(String(b))[1].split(".");
@@ -150,14 +152,14 @@ Analyzed & Deobfuscated By: VXAZ
   //  var ya = xa && xa[610401301];
   //  var wa = ya != null ? ya : false;
 
-  function auditNavUA(a) {
+  function  findMemberPosition(a) {
     const b = {};
     a.forEach(c => {
       b[c[0]] = c[1];
     });
     return c => b[c.find(d => d in b)] || "";
   }
-  function Ha() {
+  function auditNavUA() {
     var a = navUserAgent;
     if (navUserAgent.indexOf("Trident") != -1 || navUserAgent.indexOf("MSIE") != -1) {
       var b = /rv: *([\d\.]*)/.exec(a);
@@ -200,7 +202,7 @@ Analyzed & Deobfuscated By: VXAZ
     for (; d = c.exec(a);) {
       b.push([d[1], d[2], d[3] || undefined]);
     }
-    a = auditNavUA(b);
+    a =  findMemberPosition(b);
     return navUserAgent.indexOf("Opera") != -1 ? a(["Version", "Opera"]) : navUserAgent.indexOf("Edge") != -1 ? a(["Edge"]) : navUserAgent.indexOf("Edg/") != -1 ? a(["Edg"]) : navUserAgent.indexOf("Silk") != -1 ? a(["Silk"]) : (navUserAgent.indexOf("Chrome") != -1 || navUserAgent.indexOf("CriOS") != -1) && !(navUserAgent.indexOf("Edge") != -1) || navUserAgent.indexOf("Silk") != -1 ? a(["Chrome", "CriOS", "HeadlessChrome"]) : (a = b[2]) && a[1] || "";
   }
   function Ia(a, b) {
@@ -437,8 +439,6 @@ Analyzed & Deobfuscated By: VXAZ
     a[u] |= 32;
     return a;
   }
-  var sharedObject = {};
-  var emptyObject = {};
   var qb = a => typeof a === "number";
   qb.uc = true;
   var rb = a => typeof a === "string";
@@ -2537,7 +2537,7 @@ Analyzed & Deobfuscated By: VXAZ
     if (f === 9) {
       return {
         success: true,
-        value: e != null && ua(String(e), a) === 0
+        value: e != null && parseString_ExtractInt(String(e), a) === 0
       };
     }
     if (e == null) {
@@ -2559,10 +2559,10 @@ Analyzed & Deobfuscated By: VXAZ
         c = typeof a === "string" && typeof e === "string" && new RegExp(a).test(e);
         break;
       case 10:
-        c = e != null && ua(String(e), a) === -1;
+        c = e != null && parseString_ExtractInt(String(e), a) === -1;
         break;
       case 11:
-        c = e != null && ua(String(e), a) === 1;
+        c = e != null && parseString_ExtractInt(String(e), a) === 1;
         break;
       default:
         return {
@@ -5471,7 +5471,7 @@ Analyzed & Deobfuscated By: VXAZ
                   a = true;
                   break b;
                 default:
-                  throw Error("Unhandled AutoGdprFeatureStatus: " + a);
+                  throw Error("Unhandled AutoGdprFeatureStatus: ".concat(a));
               }
             } else {
               a = false;
@@ -5696,7 +5696,7 @@ Analyzed & Deobfuscated By: VXAZ
   var Hl = class extends J {};
   function V(a, b) {
     if (a.g + b > a.i.length) {
-      throw Error("Requested length " + b + " is past end of string.");
+      throw Error("Requested length ".concat(b, " is past end of string."));
     }
     const c = a.i.substring(a.g, a.g + b);
     a.g += b;
@@ -5932,7 +5932,7 @@ Analyzed & Deobfuscated By: VXAZ
       p = k(p);
       m = h(m.slice(6, 10));
       m = n(m);
-      return "1" + p + m + "N";
+      return "1".concat(p, m, "N");
     }
     function d(m) {
       if (m.length < 10) {
@@ -5942,7 +5942,7 @@ Analyzed & Deobfuscated By: VXAZ
       p = k(p);
       m = h(m.slice(6, 10));
       m = n(m);
-      return "1" + p + m + "N";
+      return "1".concat(p, m, "N");
     }
     function e(m) {
       if (m.length < 12) {
@@ -5952,7 +5952,7 @@ Analyzed & Deobfuscated By: VXAZ
       p = k(p);
       m = h(m.slice(8, 12));
       m = n(m);
-      return "1" + p + m + "N";
+      return "1".concat(p, m, "N");
     }
     function f(m) {
       if (m.length < 18) {
@@ -5962,7 +5962,7 @@ Analyzed & Deobfuscated By: VXAZ
       p = k(p);
       m = h(m.slice(12, 18));
       m = n(m);
-      return "1" + p + m + "N";
+      return "1".concat(p, m, "N");
     }
     function g(m) {
       if (m.length < 10) {
@@ -5972,7 +5972,7 @@ Analyzed & Deobfuscated By: VXAZ
       p = k(p);
       m = h(m.slice(6, 10));
       m = n(m);
-      return "1" + p + m + "N";
+      return "1".concat(p, m, "N");
     }
     function h(m) {
       const p = [];
@@ -9959,7 +9959,7 @@ Analyzed & Deobfuscated By: VXAZ
         }
       });
       jk(1086, dp(k === 0));
-      if (!(navUserAgent.indexOf("Trident") != -1 || navUserAgent.indexOf("MSIE") != -1) || ua(Ha(), 11) >= 0) {
+      if (!(navUserAgent.indexOf("Trident") != -1 || navUserAgent.indexOf("MSIE") != -1) || parseString_ExtractInt(auditNavUA(), 11) >= 0) {
         fk(K($d).j(Di.g, Di.defaultValue));
         Vn();
         gm(Ec(f, Gm, 26));
@@ -10003,4 +10003,4 @@ Analyzed & Deobfuscated By: VXAZ
       }
     }, undefined);
   })("m202504290101", typeof sttc === "undefined" ? undefined : sttc);
-}).call(this,/*REDACTED: contextPayload {Type: String, Format: JSON}*/);
+}).call(this, /*REDACTED: contextPayload {Type: String, Format: JSON}*/);
