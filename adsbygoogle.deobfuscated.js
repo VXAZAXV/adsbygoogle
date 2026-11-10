@@ -3,7 +3,7 @@ Category: Advertising
 Analyzed & Deobfuscated By: VXAZ
 */
 (function (sttc) {
-  'use strict';
+  "use strict";
 
   var unsignedMaxSafeInteger = BigInt(Number.MAX_SAFE_INTEGER);
   var unsignedMinSafeInteger = BigInt(Number.MIN_SAFE_INTEGER);
@@ -19,7 +19,11 @@ Analyzed & Deobfuscated By: VXAZ
         return a[b];
       }
       c = a[c];
-      return c !== undefined ? c : a[b];
+      if (c !== undefined) {
+        return c;
+      } else {
+        return a[b];
+      }
     }
   }
   function ha(a, b, c) {
@@ -53,7 +57,7 @@ Analyzed & Deobfuscated By: VXAZ
             });
           } else if (b !== c) {
             if (ea[d] === undefined) {
-              a = Math.random() * 1E9 >>> 0;
+              a = Math.random() * 1000000000 >>> 0;
               ea[d] = globalThis.Symbol(d);
             }
             Object.defineProperty(f, ea[d], {
@@ -67,24 +71,26 @@ Analyzed & Deobfuscated By: VXAZ
     }
   }
   ha("Symbol.dispose", function (a) {
-    return a ? a : Symbol("Symbol.dispose");
+    if (a) {
+      return a;
+    } else {
+      return Symbol("Symbol.dispose");
+    }
   }, "es_next");
-
   /* 
-  Copyright The Closure Library Authors. 
-  SPDX-License-Identifier: Apache-2.0 
-  */
-
-  function ka(a) {
+   Copyright The Closure Library Authors. 
+   SPDX-License-Identifier: Apache-2.0 
+   */
+  function isObjectOrFunction(a) {
     var b = typeof a;
     return b == "object" && a != null || b == "function";
   }
-  function la(a) {
-    return Object.prototype.hasOwnProperty.call(a, ma) && a[ma] || (a[ma] = ++na);
+  function containsClosureUID(a) {
+    return Object.prototype.hasOwnProperty.call(a, computedClosureUID) && a[computedClosureUID] || (a[computedClosureUID] = ++na);
   }
-  var ma = "closure_uid_" + (Math.random() * 1E9 >>> 0);
+  var computedClosureUID = "closure_uid_" + (Math.random() * 1000000000 >>> 0);
   var na = 0;
-  function oa(a, b, c) {
+  function callInvocationWrapper(a, b, c) {
     return a.call.apply(a.bind, arguments);
   }
   function pa(a, b, c) {
@@ -104,7 +110,7 @@ Analyzed & Deobfuscated By: VXAZ
     };
   }
   function qa(a, b, c) {
-    qa = Function.prototype.bind && Function.prototype.bind.toString().indexOf("native code") != -1 ? oa : pa;
+    qa = Function.prototype.bind && Function.prototype.bind.toString().indexOf("native code") != -1 ? callInvocationWrapper : pa;
     return qa.apply(null, arguments);
   }
   function ra(a, b, c) {
@@ -122,7 +128,7 @@ Analyzed & Deobfuscated By: VXAZ
       }
     }
   }
-  function sa(a) {
+  function delayedException(a) {
     self.setTimeout(() => {
       throw a;
     }, 0);
@@ -147,12 +153,10 @@ Analyzed & Deobfuscated By: VXAZ
       } while (c == 0);
     }
     return c;
-  }
-  //  var xa = self.CLOSURE_FLAGS || null;
+  } //  var xa = self.CLOSURE_FLAGS || null;
   //  var ya = xa && xa[610401301];
   //  var wa = ya != null ? ya : false;
-
-  function  findMemberPosition(a) {
+  function findMemberPosition(a) {
     const b = {};
     a.forEach(c => {
       b[c[0]] = c[1];
@@ -199,15 +203,31 @@ Analyzed & Deobfuscated By: VXAZ
     c = RegExp("([A-Z][\\w ]+)/([^\\s]+)\\s*(?:\\((.*?)\\))?", "g");
     b = [];
     let d;
-    for (; d = c.exec(a);) {
+    while (d = c.exec(a)) {
       b.push([d[1], d[2], d[3] || undefined]);
     }
-    a =  findMemberPosition(b);
-    return navUserAgent.indexOf("Opera") != -1 ? a(["Version", "Opera"]) : navUserAgent.indexOf("Edge") != -1 ? a(["Edge"]) : navUserAgent.indexOf("Edg/") != -1 ? a(["Edg"]) : navUserAgent.indexOf("Silk") != -1 ? a(["Silk"]) : (navUserAgent.indexOf("Chrome") != -1 || navUserAgent.indexOf("CriOS") != -1) && !(navUserAgent.indexOf("Edge") != -1) || navUserAgent.indexOf("Silk") != -1 ? a(["Chrome", "CriOS", "HeadlessChrome"]) : (a = b[2]) && a[1] || "";
+    a = findMemberPosition(b);
+    if (navUserAgent.indexOf("Opera") != -1) {
+      return a(["Version", "Opera"]);
+    } else if (navUserAgent.indexOf("Edge") != -1) {
+      return a(["Edge"]);
+    } else if (navUserAgent.indexOf("Edg/") != -1) {
+      return a(["Edg"]);
+    } else if (navUserAgent.indexOf("Silk") != -1) {
+      return a(["Silk"]);
+    } else if ((navUserAgent.indexOf("Chrome") != -1 || navUserAgent.indexOf("CriOS") != -1) && navUserAgent.indexOf("Edge") == -1 || navUserAgent.indexOf("Silk") != -1) {
+      return a(["Chrome", "CriOS", "HeadlessChrome"]);
+    } else {
+      return (a = b[2]) && a[1] || "";
+    }
   }
   function Ia(a, b) {
     if (typeof a === "string") {
-      return typeof b !== "string" || b.length != 1 ? -1 : a.indexOf(b, 0);
+      if (typeof b !== "string" || b.length != 1) {
+        return -1;
+      } else {
+        return a.indexOf(b, 0);
+      }
     }
     for (let c = 0; c < a.length; c++) {
       if (c in a && a[c] === b) {
@@ -264,9 +284,15 @@ Analyzed & Deobfuscated By: VXAZ
       }
       b = -1;
     }
-    return b < 0 ? null : typeof a === "string" ? a.charAt(b) : a[b];
+    if (b < 0) {
+      return null;
+    } else if (typeof a === "string") {
+      return a.charAt(b);
+    } else {
+      return a[b];
+    }
   }
-  function Oa(a) {
+  function cloneArray(a) {
     const b = a.length;
     if (b > 0) {
       const c = Array(b);
@@ -276,76 +302,75 @@ Analyzed & Deobfuscated By: VXAZ
       return c;
     }
     return [];
-  }
-  // Computed Character Order List
+  } // Computed Character Order List
   var Qa = {
-    "0": 52,
-    "1": 53,
-    "2": 54,
-    "3": 55,
-    "4": 56,
-    "5": 57,
-    "6": 58,
-    "7": 59,
-    "8": 60,
-    "9": 61,
-    "A": 0,
-    "B": 1,
-    "C": 2,
-    "D": 3,
-    "E": 4,
-    "F": 5,
-    "G": 6,
-    "H": 7,
-    "I": 8,
-    "J": 9,
-    "K": 10,
-    "L": 11,
-    "M": 12,
-    "N": 13,
-    "O": 14,
-    "P": 15,
-    "Q": 16,
-    "R": 17,
-    "S": 18,
-    "T": 19,
-    "U": 20,
-    "V": 21,
-    "W": 22,
-    "X": 23,
-    "Y": 24,
-    "Z": 25,
-    "a": 26,
-    "b": 27,
-    "c": 28,
-    "d": 29,
-    "e": 30,
-    "f": 31,
-    "g": 32,
-    "h": 33,
-    "i": 34,
-    "j": 35,
-    "k": 36,
-    "l": 37,
-    "m": 38,
-    "n": 39,
-    "o": 40,
-    "p": 41,
-    "q": 42,
-    "r": 43,
-    "s": 44,
-    "t": 45,
-    "u": 46,
-    "v": 47,
-    "w": 48,
-    "x": 49,
-    "y": 50,
-    "z": 51,
+    0: 52,
+    1: 53,
+    2: 54,
+    3: 55,
+    4: 56,
+    5: 57,
+    6: 58,
+    7: 59,
+    8: 60,
+    9: 61,
+    A: 0,
+    B: 1,
+    C: 2,
+    D: 3,
+    E: 4,
+    F: 5,
+    G: 6,
+    H: 7,
+    I: 8,
+    J: 9,
+    K: 10,
+    L: 11,
+    M: 12,
+    N: 13,
+    O: 14,
+    P: 15,
+    Q: 16,
+    R: 17,
+    S: 18,
+    T: 19,
+    U: 20,
+    V: 21,
+    W: 22,
+    X: 23,
+    Y: 24,
+    Z: 25,
+    a: 26,
+    b: 27,
+    c: 28,
+    d: 29,
+    e: 30,
+    f: 31,
+    g: 32,
+    h: 33,
+    i: 34,
+    j: 35,
+    k: 36,
+    l: 37,
+    m: 38,
+    n: 39,
+    o: 40,
+    p: 41,
+    q: 42,
+    r: 43,
+    s: 44,
+    t: 45,
+    u: 46,
+    v: 47,
+    w: 48,
+    x: 49,
+    y: 50,
+    z: 51,
     "+": 62,
     "/": 63,
     "=": 64,
     "-": 62,
-    "_": 63,
+    _: 63,
     ".": 64
   };
   function Ta(a) {
@@ -357,7 +382,7 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function Ua(a, b) {
     function c(e) {
-      for (; d < a.length;) {
+      while (d < a.length) {
         const f = a.charAt(d++);
         const g = Qa[f];
         if (g != null) {
@@ -370,7 +395,7 @@ Analyzed & Deobfuscated By: VXAZ
       return e;
     }
     let d = 0;
-    for (;;) {
+    while (true) {
       const e = c(-1);
       const f = c(0);
       const g = c(64);
@@ -431,8 +456,14 @@ Analyzed & Deobfuscated By: VXAZ
   ib[u] = 7;
   hb = Object.freeze(ib);
   function jb(a) {
-    if (4 & a) {
-      return 512 & a ? 512 : 1024 & a ? 1024 : 0;
+    if (a & 4) {
+      if (a & 512) {
+        return 512;
+      } else if (a & 1024) {
+        return 1024;
+      } else {
+        return 0;
+      }
     }
   }
   function kb(a) {
@@ -492,7 +523,7 @@ Analyzed & Deobfuscated By: VXAZ
     a >>>= 0;
     var c;
     if (b <= 2097151) {
-      c = "" + (4294967296 * b + a);
+      c = "" + (b * 4294967296 + a);
     } else {
       c = "" + (BigInt(b) << BigInt(32) | BigInt(a));
     }
@@ -502,7 +533,7 @@ Analyzed & Deobfuscated By: VXAZ
     var a = yb;
     var b = zb;
     var c;
-    if (b & 2147483648) {
+    if (b & -2147483648) {
       c = "" + (BigInt(b | 0) << BigInt(32) | BigInt(a >>> 0));
     } else {
       c = Cb(a, b);
@@ -510,7 +541,7 @@ Analyzed & Deobfuscated By: VXAZ
     return c;
   }
   function Eb(a, b) {
-    b ?? (b = "unexpected value ".concat(a, "!"));
+    b ??= `unexpected value ${a}!`;
     throw Error(b);
   }
   function Jb(a) {
@@ -524,7 +555,7 @@ Analyzed & Deobfuscated By: VXAZ
   function Kb(a) {
     if (a != null && typeof a !== "boolean") {
       var b = typeof a;
-      throw Error("Expected boolean but got ".concat(b != "object" ? b : a ? Array.isArray(a) ? "array" : b : "null", ": ", a));
+      throw Error(`Expected boolean but got ${b != "object" ? b : a ? Array.isArray(a) ? "array" : b : "null"}: ${a}`);
     }
     return a;
   }
@@ -548,7 +579,13 @@ Analyzed & Deobfuscated By: VXAZ
     return a | 0;
   }
   function Ob(a) {
-    return a == null ? a : Number.isFinite(a) ? a | 0 : undefined;
+    if (a == null) {
+      return a;
+    } else if (Number.isFinite(a)) {
+      return a | 0;
+    } else {
+      return undefined;
+    }
   }
   function Pb(a) {
     if (typeof a !== "number") {
@@ -568,7 +605,11 @@ Analyzed & Deobfuscated By: VXAZ
     } else if (typeof a !== "number") {
       return;
     }
-    return Number.isFinite(a) ? a | 0 : undefined;
+    if (Number.isFinite(a)) {
+      return a | 0;
+    } else {
+      return undefined;
+    }
   }
   function Rb(a) {
     if (a == null) {
@@ -579,7 +620,11 @@ Analyzed & Deobfuscated By: VXAZ
     } else if (typeof a !== "number") {
       return;
     }
-    return Number.isFinite(a) ? a >>> 0 : undefined;
+    if (Number.isFinite(a)) {
+      return a >>> 0;
+    } else {
+      return undefined;
+    }
   }
   function Sb(a) {
     if (!Mb(a)) {
@@ -596,7 +641,17 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function Vb(a) {
     const b = a.length;
-    return a[0] === "-" ? b < 20 ? true : b === 20 && Number(a.substring(0, 7)) > -922337 : b < 19 ? true : b === 19 && Number(a.substring(0, 6)) < 922337;
+    if (a[0] === "-") {
+      if (b < 20) {
+        return true;
+      } else {
+        return b === 20 && Number(a.substring(0, 7)) > -922337;
+      }
+    } else if (b < 19) {
+      return true;
+    } else {
+      return b === 19 && Number(a.substring(0, 6)) < 922337;
+    }
   }
   function Ub(a) {
     a = Math.trunc(a);
@@ -604,7 +659,7 @@ Analyzed & Deobfuscated By: VXAZ
       Bb(a);
       var b = yb;
       var c = zb;
-      if (a = c & 2147483648) {
+      if (a = c & -2147483648) {
         b = ~b + 1 >>> 0;
         c = ~c >>> 0;
         if (b == 0) {
@@ -668,7 +723,11 @@ Analyzed & Deobfuscated By: VXAZ
     return a;
   }
   function Zb(a) {
-    return a == null || typeof a === "string" ? a : undefined;
+    if (a == null || typeof a === "string") {
+      return a;
+    } else {
+      return undefined;
+    }
   }
   function $b(a, b, c, d) {
     if (a != null && typeof a === "object" && a[gb] === sharedObject) {
@@ -718,7 +777,7 @@ Analyzed & Deobfuscated By: VXAZ
       } else {
         h = undefined;
       }
-      if (!(!l || b & 128 || e)) {
+      if (!!l && !(b & 128) && !e) {
         n = true;
         k = (cc ?? ac)(k - m, m, a, h) + m;
       }
@@ -729,7 +788,7 @@ Analyzed & Deobfuscated By: VXAZ
       if (t != null && (t = c(t, d)) != null) {
         if (l && v >= k) {
           const x = v - m;
-          (p ?? (p = {}))[x] = t;
+          (p ??= {})[x] = t;
         } else {
           f[v] = t;
         }
@@ -749,7 +808,7 @@ Analyzed & Deobfuscated By: VXAZ
         if (l && !Number.isNaN(g) && (t = g + m) < k) {
           f[t] = a;
         } else {
-          (p ?? (p = {}))[v] = a;
+          (p ??= {})[v] = a;
         }
       }
     }
@@ -768,15 +827,31 @@ Analyzed & Deobfuscated By: VXAZ
   function dc(a) {
     switch (typeof a) {
       case "number":
-        return Number.isFinite(a) ? a : "" + a;
+        if (Number.isFinite(a)) {
+          return a;
+        } else {
+          return "" + a;
+        }
       case "bigint":
-        return a >= unsignedMinSafeInteger && a <= unsignedMaxSafeInteger ? Number(a) : "" + a;
+        if (a >= unsignedMinSafeInteger && a <= unsignedMaxSafeInteger) {
+          return Number(a);
+        } else {
+          return "" + a;
+        }
       case "boolean":
-        return a ? 1 : 0;
+        if (a) {
+          return 1;
+        } else {
+          return 0;
+        }
       case "object":
         if (Array.isArray(a)) {
           const b = a[u] | 0;
-          return a.length === 0 && b & 1 ? undefined : bc(a, b, dc);
+          if (a.length === 0 && b & 1) {
+            return undefined;
+          } else {
+            return bc(a, b, dc);
+          }
         }
         if (a[gb] === sharedObject) {
           return w(a);
@@ -801,7 +876,7 @@ Analyzed & Deobfuscated By: VXAZ
           throw Error("narr");
         }
         b = a[u] | 0;
-        if (4096 & b && !(2 & b)) {
+        if (b & 4096 && !(b & 2)) {
           gc();
         }
         if (b & 256) {
@@ -849,7 +924,7 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function gc() {
     if (fb != null) {
-      var a = Xa ?? (Xa = {});
+      var a = Xa ??= {};
       var b = a[fb] || 0;
       if (!(b >= 5)) {
         a[fb] = b + 1;
@@ -858,7 +933,7 @@ Analyzed & Deobfuscated By: VXAZ
         if (Ya) {
           $a(a);
         } else {
-          sa(a);
+          delayedException(a);
         }
       }
     }
@@ -872,7 +947,7 @@ Analyzed & Deobfuscated By: VXAZ
       if (a.length === 0 && c & 1) {
         a = undefined;
       } else if (!(c & 2)) {
-        if (!b || 8192 & c || 16 & c) {
+        if (!b || c & 8192 || c & 16) {
           a = ic(a, c, b && !(c & 16));
         } else {
           a[u] |= 34;
@@ -886,17 +961,21 @@ Analyzed & Deobfuscated By: VXAZ
     if (a[gb] === sharedObject) {
       b = a.A;
       c = b[u] | 0;
-      return (c === undefined ? a.i !== emptyObject && !!(2 & (a.A[u] | 0)) : !!(2 & c) && a.i !== emptyObject) ? a : ic(b, c);
+      if (c === undefined ? a.i !== emptyObject && !!((a.A[u] | 0) & 2) : !!(c & 2) && a.i !== emptyObject) {
+        return a;
+      } else {
+        return ic(b, c);
+      }
     }
   }
   function ic(a, b, c) {
-    c ?? (c = !!(34 & b));
+    c ??= !!(b & 34);
     return bc(a, b, hc, c, true);
   }
   function jc(a) {
     var b = a.A;
     const c = b[u] | 0;
-    if (!(c === undefined ? a.i !== emptyObject && !!(2 & (a.A[u] | 0)) : !!(2 & c) && a.i !== emptyObject)) {
+    if (!(c === undefined ? a.i !== emptyObject && !!((a.A[u] | 0) & 2) : !!(c & 2) && a.i !== emptyObject)) {
       return a;
     }
     a = new a.constructor(ic(b, c));
@@ -916,7 +995,7 @@ Analyzed & Deobfuscated By: VXAZ
     return true;
   }
   function lc(a) {
-    if (!kc(a) && ((a.A[u] | 0) === undefined ? a.i !== emptyObject && !!(2 & (a.A[u] | 0)) : !!(2 & (a.A[u] | 0)) && a.i !== emptyObject)) {
+    if (!kc(a) && ((a.A[u] | 0) === undefined ? a.i !== emptyObject && !!((a.A[u] | 0) & 2) : !!((a.A[u] | 0) & 2) && a.i !== emptyObject)) {
       throw Error();
     }
   }
@@ -981,7 +1060,7 @@ Analyzed & Deobfuscated By: VXAZ
       return b;
     }
     if (d !== undefined) {
-      f = (b ?? (b = a[u] | 0)) >> 14 & 1023 || 536870912;
+      f = (b ??= a[u] | 0) >> 14 & 1023 || 536870912;
       if (c >= f) {
         if (d != null) {
           a[f + -1] = {
@@ -1001,7 +1080,7 @@ Analyzed & Deobfuscated By: VXAZ
   function rc(a, b, c, d, e) {
     let f = a.A;
     let g = f[u] | 0;
-    d = (g === undefined ? a.i !== emptyObject && !!(2 & (a.A[u] | 0)) : !!(2 & g) && a.i !== emptyObject) ? 1 : d;
+    d = (g === undefined ? a.i !== emptyObject && !!((a.A[u] | 0) & 2) : !!(g & 2) && a.i !== emptyObject) ? 1 : d;
     e = !!e || d === 3;
     if (d === 2 && kc(a)) {
       f = a.A;
@@ -1010,12 +1089,12 @@ Analyzed & Deobfuscated By: VXAZ
     a = sc(f, b);
     let h = a === hb ? 7 : a[u] | 0;
     let k = tc(h, g);
-    var n = !(4 & k);
+    var n = !(k & 4);
     if (n) {
-      if (4 & k) {
+      if (k & 4) {
         a = [...a];
         h = 0;
-        k = k = (2 & g ? k | 2 : k & -3) & -273;
+        k = k = (g & 2 ? k | 2 : k & -3) & -273;
         g = oc(f, g, b, a);
       }
       let l = 0;
@@ -1035,7 +1114,7 @@ Analyzed & Deobfuscated By: VXAZ
     }
     if (k !== h) {
       a[u] = k;
-      if (2 & k) {
+      if (k & 2) {
         Object.freeze(a);
       }
     }
@@ -1043,22 +1122,22 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function vc(a, b, c, d, e, f, g, h) {
     let k = b;
-    if (f === 1 || (f !== 4 ? 0 : 2 & b || !(16 & b) && 32 & d)) {
-      if (!(!!(2 & b) && !!(4 & b) || !!(256 & b))) {
-        b |= !a.length || g && !(8192 & b) || 32 & d && !(8192 & b || 16 & b) ? 2 : 256;
+    if (f === 1 || (f !== 4 ? 0 : b & 2 || !(b & 16) && d & 32)) {
+      if ((!(b & 2) || !(b & 4)) && !(b & 256)) {
+        b |= !a.length || g && !(b & 8192) || d & 32 && !(b & 8192) && !(b & 16) ? 2 : 256;
         if (b !== k) {
           a[u] = b;
         }
         Object.freeze(a);
       }
     } else {
-      if (f === 2 && (!!(2 & b) && !!(4 & b) || !!(256 & b))) {
+      if (f === 2 && (!!(b & 2) && !!(b & 4) || !!(b & 256))) {
         a = [...a];
         k = 0;
-        b = b = (2 & d ? b | 2 : b & -3) & -273;
+        b = b = (d & 2 ? b | 2 : b & -3) & -273;
         oc(c, d, e, a);
       }
-      if (!(!!(2 & b) && !!(4 & b) || !!(256 & b))) {
+      if ((!(b & 2) || !(b & 4)) && !(b & 256)) {
         if (!h) {
           b |= 16;
         }
@@ -1071,10 +1150,14 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function sc(a, b) {
     a = y(a, b);
-    return Array.isArray(a) ? a : hb;
+    if (Array.isArray(a)) {
+      return a;
+    } else {
+      return hb;
+    }
   }
   function tc(a, b) {
-    if (2 & b) {
+    if (b & 2) {
       a |= 2;
     }
     return a | 1;
@@ -1089,7 +1172,7 @@ Analyzed & Deobfuscated By: VXAZ
     }
     let g = c === hb ? 7 : c[u] | 0;
     let h = g;
-    var k = !!(2 & g) && !!(4 & g) || !!(256 & g);
+    var k = !!(g & 2) && !!(g & 4) || !!(g & 256);
     let n = k || Object.isFrozen(c);
     if (!k) {
       g = 0;
@@ -1097,7 +1180,7 @@ Analyzed & Deobfuscated By: VXAZ
     if (!n) {
       c = [...c];
       h = 0;
-      g = g = (2 & f ? g | 2 : g & -3) & -273;
+      g = g = (f & 2 ? g | 2 : g & -3) & -273;
       n = false;
     }
     g |= 5;
@@ -1109,7 +1192,7 @@ Analyzed & Deobfuscated By: VXAZ
         if (n) {
           c = [...c];
           h = 0;
-          g = g = (2 & f ? g | 2 : g & -3) & -273;
+          g = g = (f & 2 ? g | 2 : g & -3) & -273;
           n = false;
         }
         c[l] = p;
@@ -1118,7 +1201,7 @@ Analyzed & Deobfuscated By: VXAZ
     if (g !== h) {
       if (n) {
         c = [...c];
-        g = g = (2 & f ? g | 2 : g & -3) & -273;
+        g = g = (f & 2 ? g | 2 : g & -3) & -273;
       }
       c[u] = g;
     }
@@ -1160,7 +1243,7 @@ Analyzed & Deobfuscated By: VXAZ
     return Bc(Ac(a), a, undefined, b);
   }
   function Ac(a) {
-    return a[eb] ?? (a[eb] = new Map());
+    return a[eb] ??= new Map();
   }
   function Bc(a, b, c, d) {
     let e = a.get(d);
@@ -1199,7 +1282,7 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function Fc(a, b, c) {
     a = a.A;
-    if (!((c = qc(a, a[u] | 0, b, c)) || (c = b[db]))) {
+    if (!(c = qc(a, a[u] | 0, b, c)) && !(c = b[db])) {
       a = new b();
       c = a.A;
       c[u] |= 34;
@@ -1215,7 +1298,7 @@ Analyzed & Deobfuscated By: VXAZ
       return b;
     }
     e = d[u] | 0;
-    if (!(e === undefined ? a.i !== emptyObject && !!(2 & (a.A[u] | 0)) : !!(2 & e) && a.i !== emptyObject)) {
+    if (!(e === undefined ? a.i !== emptyObject && !!((a.A[u] | 0) & 2) : !!(e & 2) && a.i !== emptyObject)) {
       const f = jc(b);
       if (f !== b) {
         if (kc(a)) {
@@ -1232,7 +1315,7 @@ Analyzed & Deobfuscated By: VXAZ
     var e = a.A;
     var f = e;
     e = e[u] | 0;
-    var g = e === undefined ? a.i !== emptyObject && !!(2 & (a.A[u] | 0)) : !!(2 & e) && a.i !== emptyObject;
+    var g = e === undefined ? a.i !== emptyObject && !!((a.A[u] | 0) & 2) : !!(e & 2) && a.i !== emptyObject;
     const h = g ? 1 : d;
     d = h === 3;
     var k = !g;
@@ -1243,10 +1326,10 @@ Analyzed & Deobfuscated By: VXAZ
     a = sc(f, c);
     var n = a === hb ? 7 : a[u] | 0;
     var l = tc(n, e);
-    if (g = !(4 & l)) {
+    if (g = !(l & 4)) {
       var m = a;
       var p = e;
-      const v = !!(2 & l);
+      const v = !!(l & 2);
       if (v) {
         p |= 2;
       }
@@ -1258,7 +1341,7 @@ Analyzed & Deobfuscated By: VXAZ
         const Ra = $b(m[H], b, false, p);
         if (Ra instanceof b) {
           if (!v) {
-            const Sa = Ra.i !== emptyObject && !!(2 & (Ra.A[u] | 0));
+            const Sa = Ra.i !== emptyObject && !!((Ra.A[u] | 0) & 2);
             if (t) {
               t = !Sa;
             }
@@ -1278,14 +1361,14 @@ Analyzed & Deobfuscated By: VXAZ
     }
     if (l !== n) {
       a[u] = l;
-      if (2 & l) {
+      if (l & 2) {
         Object.freeze(a);
       }
     }
-    if (k && !(8 & l || !a.length && (h === 1 || (h !== 4 ? 0 : 2 & l || !(16 & l) && 32 & e)))) {
-      if (!!(2 & l) && !!(4 & l) || !!(256 & l)) {
+    if (k && !(l & 8) && (!!a.length || h !== 1 && !(h !== 4 ? 0 : l & 2 || !(l & 16) && e & 32))) {
+      if (!!(l & 2) && !!(l & 4) || !!(l & 256)) {
         a = [...a];
-        l = l = (2 & e ? l | 2 : l & -3) & -273;
+        l = l = (e & 2 ? l | 2 : l & -3) & -273;
         e = oc(f, e, c, a);
       }
       b = a;
@@ -1329,14 +1412,14 @@ Analyzed & Deobfuscated By: VXAZ
     }
     let f = c === hb ? 7 : c[u] | 0;
     let g = f;
-    const h = !!(2 & f) && !!(4 & f) || !!(256 & f);
+    const h = !!(f & 2) && !!(f & 4) || !!(f & 256);
     const k = h || Object.isFrozen(c);
     let n = true;
     let l = true;
     for (let p = 0; p < c.length; p++) {
       var m = c[p];
       if (!h) {
-        m = m.i !== emptyObject && !!(2 & (m.A[u] | 0));
+        m = m.i !== emptyObject && !!((m.A[u] | 0) & 2);
         if (n) {
           n = !m;
         }
@@ -1349,10 +1432,10 @@ Analyzed & Deobfuscated By: VXAZ
       f = n ? 13 : 5;
       f = l ? f & -8193 : f | 8192;
     }
-    if (!(k && f === g)) {
+    if (!k || f !== g) {
       c = [...c];
       g = 0;
-      f = f = (2 & e ? f | 2 : f & -3) & -273;
+      f = f = (e & 2 ? f | 2 : f & -3) & -273;
     }
     if (f !== g) {
       c[u] = f;
@@ -1370,7 +1453,9 @@ Analyzed & Deobfuscated By: VXAZ
         a.push(Xb(b[e], c));
       }
     } else {
-      for (d of b) a.push(Xb(d, c));
+      for (d of b) {
+        a.push(Xb(d, c));
+      }
     }
   }
   function Lc(a, b) {
@@ -1402,19 +1487,29 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function Mc(a, b) {
     a = y(a.A, b);
-    return a == null || typeof a === "boolean" ? a : typeof a === "number" ? !!a : undefined;
+    if (a == null || typeof a === "boolean") {
+      return a;
+    } else if (typeof a === "number") {
+      return !!a;
+    } else {
+      return undefined;
+    }
   }
   function Uc(a, b) {
     var c = performance.now();
     if (c != null && typeof c !== "number") {
-      throw Error("Value of float/double field must be a number, found ".concat(typeof c, ": ", c));
+      throw Error(`Value of float/double field must be a number, found ${typeof c}: ${c}`);
     }
     yc(a, b, c, 0);
   }
   function ad(a) {
     const b = a.A;
     const c = b[u] | 0;
-    return (c === undefined ? a.i !== emptyObject && !!(2 & (a.A[u] | 0)) : !!(2 & c) && a.i !== emptyObject) ? a : new a.constructor(ic(b, c));
+    if (c === undefined ? a.i !== emptyObject && !!((a.A[u] | 0) & 2) : !!(c & 2) && a.i !== emptyObject) {
+      return a;
+    } else {
+      return new a.constructor(ic(b, c));
+    }
   }
   var J = class {
     constructor(a) {
@@ -1469,7 +1564,7 @@ Analyzed & Deobfuscated By: VXAZ
   let hd = 64;
   function id() {
     try {
-      gd ?? (gd = new Uint32Array(64));
+      gd ??= new Uint32Array(64);
       if (hd >= 64) {
         crypto.getRandomValues(gd);
         hd = 0;
@@ -1498,7 +1593,7 @@ Analyzed & Deobfuscated By: VXAZ
     if (!a || a <= 0) {
       b.ka({
         methodName: 784,
-        ua: Error("Invalid correlator, ".concat(a))
+        ua: Error(`Invalid correlator, ${a}`)
       });
     }
     return a || -1;
@@ -1531,32 +1626,40 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function pd(a, b) {
     const c = {};
-    for (const d in a) if (b.call(undefined, a[d], d, a)) {
-      c[d] = a[d];
+    for (const d in a) {
+      if (b.call(undefined, a[d], d, a)) {
+        c[d] = a[d];
+      }
     }
     return c;
   }
   function qd(a, b) {
-    for (const c in a) if (b.call(undefined, a[c], c, a)) {
-      return true;
+    for (const c in a) {
+      if (b.call(undefined, a[c], c, a)) {
+        return true;
+      }
     }
     return false;
   }
   function rd(a) {
     const b = [];
     let c = 0;
-    for (const d in a) b[c++] = a[d];
+    for (const d in a) {
+      b[c++] = a[d];
+    }
     return b;
   }
   function sd(a) {
     const b = {};
-    for (const c in a) b[c] = a[c];
+    for (const c in a) {
+      b[c] = a[c];
+    }
     return b;
   }
   /* 
-    Copyright Google LLC 
-    SPDX-License-Identifier: Apache-2.0 
-    */
+     Copyright Google LLC 
+     SPDX-License-Identifier: Apache-2.0 
+     */
   //  let td = globalThis.trustedTypes;
   let trustedPolicy;
   function createTrustedPolicy() {
@@ -1602,7 +1705,11 @@ Analyzed & Deobfuscated By: VXAZ
   var zd = /^\s*(?!javascript:)(?:[\w+.-]+:|[^:/?#]*(?:[/?#]|$))/i;
   function Ad(a = document) {
     a = a.querySelector?.("script[nonce]");
-    return a == null ? "" : a.nonce || a.getAttribute("nonce") || "";
+    if (a == null) {
+      return "";
+    } else {
+      return a.nonce || a.getAttribute("nonce") || "";
+    }
   }
   const Bd = "alternate author bookmark canonical cite help icon license modulepreload next prefetch dns-prefetch prerender preconnect preload prev search subresource".split(" ");
   function Cd(a) {
@@ -1616,7 +1723,8 @@ Analyzed & Deobfuscated By: VXAZ
     const c = a.search(Ed);
     a: {
       var d = 0;
-      for (var e = b.length; (d = a.indexOf(b, d)) >= 0 && d < c;) {
+      var e = b.length;
+      while ((d = a.indexOf(b, d)) >= 0 && d < c) {
         var f = a.charCodeAt(d - 1);
         if (f == 38 || f == 63) {
           f = a.charCodeAt(d + e);
@@ -1720,8 +1828,10 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function isPropInObject(obj, handler) {
     if (obj) {
-      for (var prop in obj) if (obj.hasOwnProperty(prop)) {
-        handler(obj[prop], prop, obj);
+      for (var prop in obj) {
+        if (obj.hasOwnProperty(prop)) {
+          handler(obj[prop], prop, obj);
+        }
       }
     }
   }
@@ -1732,9 +1842,13 @@ Analyzed & Deobfuscated By: VXAZ
     }
     let c = 305419896;
     for (let d = 0; d < b; d++) {
-      c ^= (c << 5) + (c >> 2) + a.charCodeAt(d) & 4294967295;
+      c ^= (c << 5) + (c >> 2) + a.charCodeAt(d) & -1;
     }
-    return c > 0 ? c : 4294967296 + c;
+    if (c > 0) {
+      return c;
+    } else {
+      return 4294967296 + c;
+    }
   }
   var Rd = /^([0-9.]+)px$/;
   var Sd = /^(-?[0-9.]{1,30})$/;
@@ -1743,12 +1857,20 @@ Analyzed & Deobfuscated By: VXAZ
       return null;
     }
     a = Number(a);
-    return isNaN(a) ? null : a;
+    if (isNaN(a)) {
+      return null;
+    } else {
+      return a;
+    }
   }
   function Ud(a) {
-    return (a = Rd.exec(a)) ? +a[1] : null;
+    if (a = Rd.exec(a)) {
+      return +a[1];
+    } else {
+      return null;
+    }
   }
-  var Vd = ld(() => !(navUserAgent.indexOf("iPad") != -1 || navUserAgent.indexOf("Android") != -1 && !(navUserAgent.indexOf("Mobile") != -1) || navUserAgent.indexOf("Silk") != -1) && (navUserAgent.indexOf("iPod") != -1 || navUserAgent.indexOf("iPhone") != -1 || navUserAgent.indexOf("Android") != -1 || navUserAgent.indexOf("IEMobile") != -1) ? 2 : navUserAgent.indexOf("iPad") != -1 || navUserAgent.indexOf("Android") != -1 && !(navUserAgent.indexOf("Mobile") != -1) || navUserAgent.indexOf("Silk") != -1 ? 1 : 0);
+  var Vd = ld(() => navUserAgent.indexOf("iPad") == -1 && (navUserAgent.indexOf("Android") == -1 || navUserAgent.indexOf("Mobile") != -1) && navUserAgent.indexOf("Silk") == -1 && (navUserAgent.indexOf("iPod") != -1 || navUserAgent.indexOf("iPhone") != -1 || navUserAgent.indexOf("Android") != -1 || navUserAgent.indexOf("IEMobile") != -1) ? 2 : navUserAgent.indexOf("iPad") != -1 || navUserAgent.indexOf("Android") != -1 && navUserAgent.indexOf("Mobile") == -1 || navUserAgent.indexOf("Silk") != -1 ? 1 : 0);
   var Wd = a => {
     isPropInObject({
       display: "none"
@@ -1760,19 +1882,23 @@ Analyzed & Deobfuscated By: VXAZ
   const Yd = () => {
     const a = Xd;
     Xd = [];
-    for (const b of a) try {
-      b();
-    } catch {}
+    for (const b of a) {
+      try {
+        b();
+      } catch {}
+    }
   };
   function Zd() {
     var a = K($d).B(ae.g, ae.defaultValue);
     var b = window.document;
     if (a.length && b.head) {
-      for (const c of a) if (c && b.head) {
-        a = Md("META");
-        b.head.appendChild(a);
-        a.httpEquiv = "origin-trial";
-        a.content = c;
+      for (const c of a) {
+        if (c && b.head) {
+          a = Md("META");
+          b.head.appendChild(a);
+          a.httpEquiv = "origin-trial";
+          a.content = c;
+        }
       }
     }
   }
@@ -1804,7 +1930,12 @@ Analyzed & Deobfuscated By: VXAZ
     }
   }
   function fe(a, b, c) {
-    return typeof a.removeEventListener === "function" ? (a.removeEventListener(b, c, false), true) : false;
+    if (typeof a.removeEventListener === "function") {
+      a.removeEventListener(b, c, false);
+      return true;
+    } else {
+      return false;
+    }
   }
   function ge(a, b, c = null, d = false, e = false) {
     he(a, b, c, d, e);
@@ -1839,7 +1970,7 @@ Analyzed & Deobfuscated By: VXAZ
     a.google_image_requests.push(f);
   }
   function ie(a, b) {
-    let c = `https://${"pagead2.googlesyndication.com"}/pagead/gen_204?id=${b}`;
+    let c = `https://pagead2.googlesyndication.com/pagead/gen_204?id=${b}`;
     isPropInObject(a, (d, e) => {
       if (d || d === 0) {
         c += `&${e}=${encodeURIComponent(String(d))}`;
@@ -1921,10 +2052,22 @@ Analyzed & Deobfuscated By: VXAZ
         b = a.parent.context || a.parent.AMP_CONTEXT_DATA;
       } catch {}
     }
-    return b?.pageViewId && b?.canonicalUrl ? b : null;
+    if (b?.pageViewId && b?.canonicalUrl) {
+      return b;
+    } else {
+      return null;
+    }
   }
   function oe(a = ne()) {
-    return a ? Jd(a.master) ? a.master : null : null;
+    if (a) {
+      if (Jd(a.master)) {
+        return a.master;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
   function pe(a, b) {
     b = String(b);
@@ -1937,7 +2080,11 @@ Analyzed & Deobfuscated By: VXAZ
     this.g = a || self.document || document;
   }
   qe.prototype.contains = function (a, b) {
-    return a && b ? a == b || a.contains(b) : false;
+    if (a && b) {
+      return a == b || a.contains(b);
+    } else {
+      return false;
+    }
   };
   var re = a => {
     a = oe(ne(a)) || a;
@@ -1946,7 +2093,11 @@ Analyzed & Deobfuscated By: VXAZ
   };
   var se = a => {
     a = a.google_unique_id;
-    return typeof a === "number" ? a : 0;
+    if (typeof a === "number") {
+      return a;
+    } else {
+      return 0;
+    }
   };
   var te = a => {
     if (!a) {
@@ -1984,7 +2135,7 @@ Analyzed & Deobfuscated By: VXAZ
             a = c + "\n" + a;
           }
           let d;
-          for (; a != d;) {
+          while (a != d) {
             d = a;
             a = a.replace(RegExp("((https?:/..*/)[^/:]*:\\d+(?:.|\n)*)\\2"), "$1");
           }
@@ -2035,11 +2186,19 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function Ee() {
     const a = self.performance;
-    return a && a.now && a.timing ? Math.floor(a.now() + a.timing.navigationStart) : Date.now();
+    if (a && a.now && a.timing) {
+      return Math.floor(a.now() + a.timing.navigationStart);
+    } else {
+      return Date.now();
+    }
   }
   function Fe() {
     const a = self.performance;
-    return a && a.now ? a.now() : null;
+    if (a && a.now) {
+      return a.now();
+    } else {
+      return null;
+    }
   }
   var Ge = class {
     constructor(a, b) {
@@ -2053,7 +2212,7 @@ Analyzed & Deobfuscated By: VXAZ
     }
   };
   const He = self.performance;
-  const Ie = !!(He && He.mark && He.measure && He.clearMarks);
+  const Ie = !!He && !!He.mark && !!He.measure && !!He.clearMarks;
   const Je = ld(() => {
     var a;
     if (a = Ie) {
@@ -2094,7 +2253,7 @@ Analyzed & Deobfuscated By: VXAZ
         this.i = a.google_js_reporting_queue;
         b = a.google_measure_js_timing;
       }
-      this.g = Je() || (b != null ? b : Math.random() < 1);
+      this.g = Je() || (b ?? Math.random() < 1);
     }
     start(a, b) {
       if (!this.g) {
@@ -2113,7 +2272,7 @@ Analyzed & Deobfuscated By: VXAZ
         if (He && Je()) {
           He.mark(`goog_${a.label}_${a.uniqueId}_end`);
         }
-        if (!(!this.g || this.i.length > 2048)) {
+        if (!!this.g && !(this.i.length > 2048)) {
           this.i.push(a);
         }
       }
@@ -2158,14 +2317,20 @@ Analyzed & Deobfuscated By: VXAZ
       if (!e) {
         e = 0;
       }
-      return e < 2 ? encodeURIComponent(Oe(a, b, c, d, e + 1)) : "...";
+      if (e < 2) {
+        return encodeURIComponent(Oe(a, b, c, d, e + 1));
+      } else {
+        return "...";
+      }
     }
     return encodeURIComponent(String(a));
   }
   function Qe(a) {
     let b = 1;
-    for (const c in a.i) if (c.length > b) {
-      b = c.length;
+    for (const c in a.i) {
+      if (c.length > b) {
+        b = c.length;
+      }
     }
     return 3997 - b - a.j.length - 1;
   }
@@ -2201,7 +2366,7 @@ Analyzed & Deobfuscated By: VXAZ
     }
     a = "";
     if (c != null) {
-      a = `${e}${"trn"}=${c}`;
+      a = `${e}trn=${c}`;
     }
     return b + a;
   }
@@ -2270,7 +2435,7 @@ Analyzed & Deobfuscated By: VXAZ
         var g = ab;
         g.g.push(1);
         g.i[1] = Ne("context", a);
-        if (!!!(b.error && b.meta && b.id)) {
+        if (!b.error || !b.meta || !b.id) {
           b = new ve(b, {
             message: ye(b)
           });
@@ -2425,10 +2590,14 @@ Analyzed & Deobfuscated By: VXAZ
     a = (y(a.A, 1) == null ? y(a.A, 1) : Number.isFinite(y(a.A, 1)) ? y(a.A, 1) | 0 : undefined) ?? 0;
     if (a === 1) {
       c = cf(c[0], b);
-      return c.success ? {
-        success: true,
-        value: !c.value
-      } : c;
+      if (c.success) {
+        return {
+          success: true,
+          value: !c.value
+        };
+      } else {
+        return c;
+      }
     }
     c = Ka(c, d => cf(d, b));
     switch (a) {
@@ -2777,7 +2946,7 @@ Analyzed & Deobfuscated By: VXAZ
     }
   };
   var tg = class extends sg {
-    constructor(a, b, c = 1E3, d = 100, e = false, f) {
+    constructor(a, b, c = 1000, d = 100, e = false, f) {
       super(a, b, c, d, e && true, f);
     }
   };
@@ -2941,7 +3110,7 @@ Analyzed & Deobfuscated By: VXAZ
     b = kf(JSON.stringify(b));
     b = Hg(b);
     a = Cg(b, a);
-    return a != null ? a : c;
+    return a ?? c;
   }
   function Hg(a) {
     const b = K(zg).N;
@@ -2975,22 +3144,38 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function Kg(a, b = 0, c) {
     a = Number(Eg(2, a, b, c));
-    return isNaN(a) ? b : a;
+    if (isNaN(a)) {
+      return b;
+    } else {
+      return a;
+    }
   }
   function Lg(a, b = "", c) {
     a = Eg(3, a, b, c);
-    return typeof a === "string" ? a : b;
+    if (typeof a === "string") {
+      return a;
+    } else {
+      return b;
+    }
   }
   function Mg(a, b = [], c) {
     a = Eg(6, a, b, c);
-    return Array.isArray(a) ? a : b;
+    if (Array.isArray(a)) {
+      return a;
+    } else {
+      return b;
+    }
   }
   function Ng(a, b = [], c) {
     a = Eg(8, a, b, c);
-    return Array.isArray(a) ? a : b;
+    if (Array.isArray(a)) {
+      return a;
+    } else {
+      return b;
+    }
   }
   function Gg(a) {
-    return K(Fg).i[a] || (K(Fg).i[a] = {});
+    return K(Fg).i[a] ||= {};
   }
   function Og(a, b) {
     const c = Gg(b);
@@ -3151,7 +3336,9 @@ Analyzed & Deobfuscated By: VXAZ
     }, a);
     N(14, b => {
       var c = K(zg);
-      for (const d of [3, 4, 5]) Object.assign(c.N[d], b[d]);
+      for (const d of [3, 4, 5]) {
+        Object.assign(c.N[d], b[d]);
+      }
     }, a);
   }
   function Wg(a) {
@@ -3180,7 +3367,7 @@ Analyzed & Deobfuscated By: VXAZ
     }
   }
   function Ue(a, b, c, d = false, e) {
-    if ((d ? a.g : Math.random()) < (e || .01)) {
+    if ((d ? a.g : Math.random()) < (e || 0.01)) {
       try {
         let f;
         if (c instanceof Se) {
@@ -3351,13 +3538,17 @@ Analyzed & Deobfuscated By: VXAZ
       this.i = {};
     }
     set(a, b) {
-      const c = a instanceof Object ? String(la(a)) : a + "";
+      const c = a instanceof Object ? String(containsClosureUID(a)) : a + "";
       this.g[c] = b;
       this.i[c] = a;
     }
     get(a, b) {
-      a = a instanceof Object ? String(la(a)) : a + "";
-      return this.g[a] !== undefined ? this.g[a] : b;
+      a = a instanceof Object ? String(containsClosureUID(a)) : a + "";
+      if (this.g[a] !== undefined) {
+        return this.g[a];
+      } else {
+        return b;
+      }
     }
     clear() {
       this.g = {};
@@ -3380,7 +3571,7 @@ Analyzed & Deobfuscated By: VXAZ
     return a;
   }
   function th(a, b) {
-    if (!(a.g != null)) {
+    if (a.g == null) {
       b(a.i);
     }
     return a;
@@ -3394,9 +3585,18 @@ Analyzed & Deobfuscated By: VXAZ
       return this.g.value;
     }
     map(a) {
-      return this.g != null ? (a = a(this.getValue()), a instanceof oh ? a : new oh({
-        value: a
-      }, null)) : this;
+      if (this.g != null) {
+        a = a(this.getValue());
+        if (a instanceof oh) {
+          return a;
+        } else {
+          return new oh({
+            value: a
+          }, null);
+        }
+      } else {
+        return this;
+      }
     }
   };
   var uh = class {
@@ -3412,7 +3612,7 @@ Analyzed & Deobfuscated By: VXAZ
       this.g.set(a, true);
     }
     contains(a) {
-      return this.g.g[a instanceof Object ? String(la(a)) : a + ""] !== undefined;
+      return this.g.g[a instanceof Object ? String(containsClosureUID(a)) : a + ""] !== undefined;
     }
   };
   var vh = class {
@@ -3430,7 +3630,11 @@ Analyzed & Deobfuscated By: VXAZ
   };
   var wh = class extends J {
     getId() {
-      return y(this.A, 3) == null || typeof y(this.A, 3) === "string" ? y(this.A, 3) : undefined;
+      if (y(this.A, 3) == null || typeof y(this.A, 3) === "string") {
+        return y(this.A, 3);
+      } else {
+        return undefined;
+      }
     }
   };
   var xh = class {
@@ -3604,7 +3808,7 @@ Analyzed & Deobfuscated By: VXAZ
         if (c = b.parentNode) {
           let d = b.nextSibling;
           if (d && d.parentNode != c) {
-            for (; d && d.nodeType == 8;) {
+            while (d && d.nodeType == 8) {
               d = d.nextSibling;
             }
           }
@@ -3646,10 +3850,10 @@ Analyzed & Deobfuscated By: VXAZ
   var Uh = new P(1357);
   var Vh = new O(1345);
   var Wh = new P(1130, 100);
-  var Xh = new P(1340, .2);
-  var Yh = new P(1338, .3);
+  var Xh = new P(1340, 0.2);
+  var Yh = new P(1338, 0.3);
   var Zh = new P(1336, 1);
-  var $h = new P(1339, .3);
+  var $h = new P(1339, 0.3);
   var ai = new O(1337);
   var bi = new class {
     constructor(a, b = "") {
@@ -3671,10 +3875,10 @@ Analyzed & Deobfuscated By: VXAZ
   var ni = new Qh(683929765);
   var oi = new O(506914611);
   var pi = new O(750577535);
-  var qi = new P(717888910, .7);
-  var ri = new P(643258048, .15);
-  var si = new P(643258049, .16);
-  var ti = new P(717888912, .7);
+  var qi = new P(717888910, 0.7);
+  var ri = new P(643258048, 0.15);
+  var si = new P(643258049, 0.16);
+  var ti = new P(717888912, 0.7);
   var ui = new P(748662193, 8);
   var vi = new O(711741274);
   var wi = new O(45650663);
@@ -3694,10 +3898,10 @@ Analyzed & Deobfuscated By: VXAZ
   var $d = class {
     constructor() {
       const a = {};
-      this.j = (b, c) => a[b] != null ? a[b] : c;
-      this.u = (b, c) => a[b] != null ? a[b] : c;
-      this.i = (b, c) => a[b] != null ? a[b] : c;
-      this.B = (b, c) => a[b] != null ? a[b] : c;
+      this.j = (b, c) => a[b] ?? c;
+      this.u = (b, c) => a[b] ?? c;
+      this.i = (b, c) => a[b] ?? c;
+      this.B = (b, c) => a[b] ?? c;
       this.g = (b, c) => a[b] != null ? c.concat(a[b]) : c;
       this.C = () => {};
     }
@@ -3705,11 +3909,19 @@ Analyzed & Deobfuscated By: VXAZ
   function Ei(a, b) {
     const c = e => {
       e = e.hasOwnProperty("google-ama-order-assurance") ? e["google-ama-order-assurance"] : null;
-      return e == null ? false : 0 < e;
+      if (e == null) {
+        return false;
+      } else {
+        return e > 0;
+      }
     };
     const d = e => {
       e = e.hasOwnProperty("google-ama-order-assurance") ? e["google-ama-order-assurance"] : null;
-      return e == null ? false : 0 > e;
+      if (e == null) {
+        return false;
+      } else {
+        return e < 0;
+      }
     };
     switch (b) {
       case 0:
@@ -3785,7 +3997,11 @@ Analyzed & Deobfuscated By: VXAZ
     }
   }
   function Ni(a, b) {
-    return (a = Oi(a, b)) ? a.y : 0;
+    if (a = Oi(a, b)) {
+      return a.y;
+    } else {
+      return 0;
+    }
   }
   function Oi(a, b) {
     try {
@@ -3801,7 +4017,11 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function Pi(a, b, c, d, e) {
     if (a !== a.top) {
-      return (Jd(a.top) ? a.top : null) ? 3 : 16;
+      if (Jd(a.top) ? a.top : null) {
+        return 3;
+      } else {
+        return 16;
+      }
     }
     if (!((Ji(a).clientWidth ?? undefined) < 488)) {
       return 4;
@@ -3862,13 +4082,17 @@ Analyzed & Deobfuscated By: VXAZ
       try {
         c = a.getComputedStyle ? a.getComputedStyle(b, null) : b.currentStyle;
       } catch (d) {}
-      return !c || c.display !== "none" && !(c.position === "absolute" && (c.visibility === "hidden" || c.visibility === "collapse"));
+      return !c || c.display !== "none" && (c.position !== "absolute" || c.visibility !== "hidden" && c.visibility !== "collapse");
     }
     return false;
   }
   function Ti(a, b, c) {
     a = Oi(b, a);
-    return c === "rtl" ? -a.x : a.x;
+    if (c === "rtl") {
+      return -a.x;
+    } else {
+      return a.x;
+    }
   }
   function Ui(a, b) {
     var c;
@@ -3882,7 +4106,7 @@ Analyzed & Deobfuscated By: VXAZ
       if (Ti(a, b, c) !== 0) {
         Ri(b, c, "0px");
         var e = Ti(a, b, c);
-        Ri(b, c, `${-1 * e}px`);
+        Ri(b, c, `${e * -1}px`);
         a = Ti(a, b, c);
         if (a !== 0 && a !== e) {
           Ri(b, c, `${e / (a - e) * e}px`);
@@ -3897,7 +4121,11 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function Wi(a, b) {
     const c = se(a) === 0;
-    return b && c ? Math.max(250, 2 * Ji(a).clientHeight / 3) : 250;
+    if (b && c) {
+      return Math.max(250, Ji(a).clientHeight * 2 / 3);
+    } else {
+      return 250;
+    }
   }
   function Xi(a, b) {
     let c;
@@ -3909,7 +4137,7 @@ Analyzed & Deobfuscated By: VXAZ
   function Zi(a, b, c, d) {
     const e = a && Ni(c, b) < Ji(b).clientHeight - 100;
     const f = Wi(b, d);
-    return g => !(e && g.height() >= f);
+    return g => !e || !(g.height() >= f);
   }
   function aj(a) {
     return b => b.height() <= a;
@@ -3989,7 +4217,11 @@ Analyzed & Deobfuscated By: VXAZ
   var kj = class extends J {};
   var lj = class extends J {
     getName() {
-      return y(this.A, 4) == null || typeof y(this.A, 4) === "string" ? y(this.A, 4) : undefined;
+      if (y(this.A, 4) == null || typeof y(this.A, 4) === "string") {
+        return y(this.A, 4);
+      } else {
+        return undefined;
+      }
     }
   };
   var mj = [1, 2, 3];
@@ -4055,7 +4287,7 @@ Analyzed & Deobfuscated By: VXAZ
     if (!c.length) {
       return [];
     }
-    b = Oa(c);
+    b = cloneArray(c);
     b = xj(a, b);
     if (typeof a.i === "number") {
       c = a.i;
@@ -4101,12 +4333,12 @@ Analyzed & Deobfuscated By: VXAZ
       this.i = createPolicyScriptObject`https://pagead2.googlesyndication.com/pagead/js/err_rep.js`;
     }
     I(a, b, c, d) {
-      c ?? (c = 0.01);
-      d ?? (d = "jserror");
+      c ??= 0.01;
+      d ??= "jserror";
       if (Math.random() > c) {
         return false;
       }
-      if (!!!(b.error && b.meta && b.id)) {
+      if (!b.error || !b.meta || !b.id) {
         b = new ve(b, {
           context: a,
           id: d
@@ -4251,9 +4483,13 @@ Analyzed & Deobfuscated By: VXAZ
             });
           }
         }
-        return b != null ? new oh({
-          value: b
-        }, null) : new oh(null, Error("Missing dimension when creating placement id"));
+        if (b != null) {
+          return new oh({
+            value: b
+          }, null);
+        } else {
+          return new oh(null, Error("Missing dimension when creating placement id"));
+        }
       case 3:
         return new oh(null, Error("Missing dimension when creating placement id"));
       default:
@@ -4300,7 +4536,7 @@ Analyzed & Deobfuscated By: VXAZ
             return c;
           }
       }
-      for (; d && !d.anchor.nextSibling && d.anchor.parentNode != d.anchor.ownerDocument.body;) {
+      while (d && !d.anchor.nextSibling && d.anchor.parentNode != d.anchor.ownerDocument.body) {
         d = {
           anchor: d.anchor.parentNode,
           position: 3
@@ -4340,11 +4576,13 @@ Analyzed & Deobfuscated By: VXAZ
             }, {
               anchor: h,
               position: y(A(e, Lh, 2).A, 2) == null ? y(A(e, Lh, 2).A, 2) : Number.isFinite(y(A(e, Lh, 2).A, 2)) ? y(A(e, Lh, 2).A, 2) | 0 : undefined
-            })) c.set(la(f.anchor), f.position);
+            })) {
+              c.set(containsClosureUID(f.anchor), f.position);
+            }
           }
         }
         if (A(e, Lh, 3) && A(A(e, Lh, 3), wh, 1) && (f = Oj(a, A(A(e, Lh, 3), wh, 1)))) {
-          c.set(la(f), y(A(e, Lh, 3).A, 2) == null ? y(A(e, Lh, 3).A, 2) : Number.isFinite(y(A(e, Lh, 3).A, 2)) ? y(A(e, Lh, 3).A, 2) | 0 : undefined);
+          c.set(containsClosureUID(f), y(A(e, Lh, 3).A, 2) == null ? y(A(e, Lh, 3).A, 2) : Number.isFinite(y(A(e, Lh, 3).A, 2)) ? y(A(e, Lh, 3).A, 2) | 0 : undefined);
         }
       } else if (A(e, kj, Dc(e, mj) === 2 ? 2 : -1)) {
         Pj(a, A(e, kj, Dc(e, mj) === 2 ? 2 : -1), c);
@@ -4364,11 +4602,11 @@ Analyzed & Deobfuscated By: VXAZ
     if (A(b, Lh, 2)) {
       b = A(b, Lh, 2);
       if (a = Oj(a, A(b, wh, 1))) {
-        c.set(la(a), y(b.A, 2) == null ? y(b.A, 2) : Number.isFinite(y(b.A, 2)) ? y(b.A, 2) | 0 : undefined);
+        c.set(containsClosureUID(a), y(b.A, 2) == null ? y(b.A, 2) : Number.isFinite(y(b.A, 2)) ? y(b.A, 2) | 0 : undefined);
       }
     } else if (A(b, wh, 1) && (a = Sj(a, A(b, wh, 1)))) {
       a.forEach(d => {
-        d = la(d);
+        d = containsClosureUID(d);
         c.set(d, 1);
         c.set(d, 4);
         c.set(d, 2);
@@ -4379,7 +4617,7 @@ Analyzed & Deobfuscated By: VXAZ
   const Qj = (a, b, c) => {
     if (A(b, wh, 1) && (a = Sj(a, A(b, wh, 1)))) {
       a.forEach(d => {
-        c.add(la(d));
+        c.add(containsClosureUID(d));
       });
     }
   };
@@ -4410,7 +4648,7 @@ Analyzed & Deobfuscated By: VXAZ
       yc(b, 2, Yb(n), "");
     } catch (p) {}
     try {
-      var l = typeof c?.message === "string" ? c.message : "Caught ".concat(c);
+      var l = typeof c?.message === "string" ? c.message : `Caught ${c}`;
       yc(b, 3, Yb(l), "");
     } catch (p) {}
     try {
@@ -4565,7 +4803,7 @@ Analyzed & Deobfuscated By: VXAZ
     } = gk());
     bk = a || new $g();
     Zg(bk, ck);
-    Zj = b || new tg(2, "m202504290101", 1E3);
+    Zj = b || new tg(2, "m202504290101", 1000);
     dk = new ak(c);
     if (self.document.readyState === "complete") {
       fk();
@@ -4578,7 +4816,7 @@ Analyzed & Deobfuscated By: VXAZ
   function jk(a, b) {
     dk.na(a, b);
   }
-  function kk(a, b, c = .01) {
+  function kk(a, b, c = 0.01) {
     const d = K(Yg).g();
     if (!b.eid && d.length) {
       b.eid = d.toString();
@@ -4589,17 +4827,22 @@ Analyzed & Deobfuscated By: VXAZ
     return dk.I(a, b, c, d, e);
   }
   function mk(a, b, c = Yj, d, e) {
-    return (!!(b.error && b.meta && b.id) ? b.msg || ye(b.error) : ye(b)).indexOf("TagError") === 0 ? ((!!(b.error && b.meta && b.id) ? b.error : b).pbr = true, false) : lk(a, b, c, d, e);
+    if ((!!b.error && !!b.meta && !!b.id ? b.msg || ye(b.error) : ye(b)).indexOf("TagError") === 0) {
+      (!!b.error && !!b.meta && !!b.id ? b.error : b).pbr = true;
+      return false;
+    } else {
+      return lk(a, b, c, d, e);
+    }
   }
   function gk() {
     let a;
     let b;
     if (typeof self.google_srt === "number") {
       b = self.google_srt;
-      a = self.google_srt === 0 ? 1 : .01;
+      a = self.google_srt === 0 ? 1 : 0.01;
     } else {
       b = Math.random();
-      a = .01;
+      a = 0.01;
     }
     return {
       Eb: a,
@@ -4647,7 +4890,11 @@ Analyzed & Deobfuscated By: VXAZ
     return a.has("all") || a.has("before");
   }
   function rk(a) {
-    return (a = a && a.getAttribute("data-no-auto-ads")) ? new Set(a.split("|")) : new Set();
+    if (a = a && a.getAttribute("data-no-auto-ads")) {
+      return new Set(a.split("|"));
+    } else {
+      return new Set();
+    }
   }
   function pk(a) {
     const b = rk(a);
@@ -4674,7 +4921,11 @@ Analyzed & Deobfuscated By: VXAZ
     for (a = a.previousSibling; a && a.nodeType != 1;) {
       a = a.previousSibling;
     }
-    return a ? a : null;
+    if (a) {
+      return a;
+    } else {
+      return null;
+    }
   }
   function wk(a) {
     if (!!a.nextSibling || !!a.parentNode) {
@@ -4687,7 +4938,11 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function Hk(a) {
     const gtagObject = isApiReady(a);
-    return gtagObject ? Ja(Ka(gtagObject.pubads().getSlots(), c => a.document.getElementById(c.getSlotElementId())), c => c != null) : null;
+    if (gtagObject) {
+      return Ja(Ka(gtagObject.pubads().getSlots(), c => a.document.getElementById(c.getSlotElementId())), c => c != null);
+    } else {
+      return null;
+    }
   }
   function Ik(a) {
     const b = [];
@@ -4737,27 +4992,31 @@ Analyzed & Deobfuscated By: VXAZ
         wb: false,
         xb: false
       };
-      var k = Oa(e.document.querySelectorAll(".google-auto-placed"));
-      var n = Oa(e.document.querySelectorAll("ins.adsbygoogle[data-anchor-status]"));
-      var l = Oa(e.document.querySelectorAll("ins.adsbygoogle[data-ad-format=autorelaxed]"));
-      var m = (Hk(e) || Oa(e.document.querySelectorAll("div[id^=div-gpt-ad]"))).concat(Oa(e.document.querySelectorAll("iframe[id^=google_ads_iframe]")));
-      const v = Oa(e.document.querySelectorAll("div.trc_related_container,div.OUTBRAIN,div[id^=rcjsload],div[id^=ligatusframe],div[id^=crt-],iframe[id^=cto_iframe],div[id^=yandex_], div[id^=Ya_sync],iframe[src*=adnxs],div.advertisement--appnexus,div[id^=apn-ad],div[id^=amzn-native-ad],iframe[src*=amazon-adsystem],iframe[id^=ox_],iframe[src*=openx],img[src*=openx],div[class*=adtech],div[id^=adtech],iframe[src*=adtech],div[data-content-ad-placement=true],div.wpcnt div[id^=atatags-]"));
-      const t = Oa(e.document.querySelectorAll("ins.adsbygoogle-ablated-ad-slot"));
-      const x = Oa(e.document.querySelectorAll("div.googlepublisherpluginad"));
-      const H = Oa(e.document.querySelectorAll("html > ins.adsbygoogle"));
-      let M = [].concat(...Oa(e.document.querySelectorAll("iframe[id^=aswift_],iframe[id^=google_ads_frame]")), ...Oa(e.document.querySelectorAll("body ins.adsbygoogle")));
+      var k = cloneArray(e.document.querySelectorAll(".google-auto-placed"));
+      var n = cloneArray(e.document.querySelectorAll("ins.adsbygoogle[data-anchor-status]"));
+      var l = cloneArray(e.document.querySelectorAll("ins.adsbygoogle[data-ad-format=autorelaxed]"));
+      var m = (Hk(e) || cloneArray(e.document.querySelectorAll("div[id^=div-gpt-ad]"))).concat(cloneArray(e.document.querySelectorAll("iframe[id^=google_ads_iframe]")));
+      const v = cloneArray(e.document.querySelectorAll("div.trc_related_container,div.OUTBRAIN,div[id^=rcjsload],div[id^=ligatusframe],div[id^=crt-],iframe[id^=cto_iframe],div[id^=yandex_], div[id^=Ya_sync],iframe[src*=adnxs],div.advertisement--appnexus,div[id^=apn-ad],div[id^=amzn-native-ad],iframe[src*=amazon-adsystem],iframe[id^=ox_],iframe[src*=openx],img[src*=openx],div[class*=adtech],div[id^=adtech],iframe[src*=adtech],div[data-content-ad-placement=true],div.wpcnt div[id^=atatags-]"));
+      const t = cloneArray(e.document.querySelectorAll("ins.adsbygoogle-ablated-ad-slot"));
+      const x = cloneArray(e.document.querySelectorAll("div.googlepublisherpluginad"));
+      const H = cloneArray(e.document.querySelectorAll("html > ins.adsbygoogle"));
+      let M = [].concat(...cloneArray(e.document.querySelectorAll("iframe[id^=aswift_],iframe[id^=google_ads_frame]")), ...cloneArray(e.document.querySelectorAll("body ins.adsbygoogle")));
       f = [];
-      for (const [Ra, Sa] of [[h.nc, k], [h.wb, n], [h.rc, l], [h.oc, m], [h.sc, v], [h.mc, t], [h.qc, x], [h.xb, H]]) if (Ra === false) {
-        f = f.concat(Sa);
-      } else {
-        M = M.concat(Sa);
+      for (const [Ra, Sa] of [[h.nc, k], [h.wb, n], [h.rc, l], [h.oc, m], [h.sc, v], [h.mc, t], [h.qc, x], [h.xb, H]]) {
+        if (Ra === false) {
+          f = f.concat(Sa);
+        } else {
+          M = M.concat(Sa);
+        }
       }
       h = Ik(M);
       f = Ik(f);
       h = h.slice(0);
-      for (p of f) for (f = 0; f < h.length; f++) {
-        if (p.contains(h[f]) || h[f].contains(p)) {
-          h.splice(f, 1);
+      for (p of f) {
+        for (f = 0; f < h.length; f++) {
+          if (p.contains(h[f]) || h[f].contains(p)) {
+            h.splice(f, 1);
+          }
         }
       }
       var p = h;
@@ -4787,7 +5046,7 @@ Analyzed & Deobfuscated By: VXAZ
         m = y(m.A, 1) == null ? y(m.A, 1) : Number.isFinite(y(m.A, 1)) ? y(m.A, 1) | 0 : undefined;
         n = !l.call(n, m);
       }
-      if (n || (y(h.A, 8) == null ? y(h.A, 8) : Number.isFinite(y(h.A, 8)) ? y(h.A, 8) | 0 : undefined) !== 1 || !!(h && pc(h, Ch, 4) && d[y(A(h, Ch, 4).A, 2) == null ? y(A(h, Ch, 4).A, 2) : Number.isFinite(y(A(h, Ch, 4).A, 2)) ? y(A(h, Ch, 4).A, 2) | 0 : undefined])) {
+      if (n || (y(h.A, 8) == null ? y(h.A, 8) : Number.isFinite(y(h.A, 8)) ? y(h.A, 8) | 0 : undefined) !== 1 || !!h && !!pc(h, Ch, 4) && !!d[y(A(h, Ch, 4).A, 2) == null ? y(A(h, Ch, 4).A, 2) : Number.isFinite(y(A(h, Ch, 4).A, 2)) ? y(A(h, Ch, 4).A, 2) | 0 : undefined]) {
         p = null;
       } else {
         p.i++;
@@ -4827,7 +5086,7 @@ Analyzed & Deobfuscated By: VXAZ
     return false;
   }
   function Mk(a, b, c, d) {
-    if (!!(b && pc(b, Ch, 4) && d[y(A(b, Ch, 4).A, 2) == null ? y(A(b, Ch, 4).A, 2) : Number.isFinite(y(A(b, Ch, 4).A, 2)) ? y(A(b, Ch, 4).A, 2) | 0 : undefined]) || ((y(b.A, 8) == null ? y(b.A, 8) : Number.isFinite(y(b.A, 8)) ? y(b.A, 8) | 0 : undefined) ?? undefined) != 1) {
+    if (!!b && !!pc(b, Ch, 4) && !!d[y(A(b, Ch, 4).A, 2) == null ? y(A(b, Ch, 4).A, 2) : Number.isFinite(y(A(b, Ch, 4).A, 2)) ? y(A(b, Ch, 4).A, 2) | 0 : undefined] || ((y(b.A, 8) == null ? y(b.A, 8) : Number.isFinite(y(b.A, 8)) ? y(b.A, 8) | 0 : undefined) ?? undefined) != 1) {
       return null;
     }
     d = A(b, wh, 1);
@@ -4864,9 +5123,9 @@ Analyzed & Deobfuscated By: VXAZ
         }
         f = false;
       }
-      if (c = !f && !(!c && e == 2 && !wk(d))) {
+      if (c = !f && (!!c || e != 2 || !!wk(d))) {
         c = e == 1 || e == 2 ? d : d.parentNode;
-        c = !(c && !Oh(c) && c.offsetWidth <= 0);
+        c = !c || !!Oh(c) || !(c.offsetWidth <= 0);
       }
       f = !c;
     }
@@ -4874,11 +5133,11 @@ Analyzed & Deobfuscated By: VXAZ
       c = a.C;
       f = y(b.A, 2) == null ? y(b.A, 2) : Number.isFinite(y(b.A, 2)) ? y(b.A, 2) | 0 : undefined;
       g = c.i;
-      var h = la(d);
+      var h = containsClosureUID(d);
       g = g.g.get(h);
       if (!(g = g ? g.contains(f) : false)) {
         a: {
-          if (c.g.contains(la(d))) {
+          if (c.g.contains(containsClosureUID(d))) {
             switch (f) {
               case 2:
               case 3:
@@ -4890,7 +5149,7 @@ Analyzed & Deobfuscated By: VXAZ
             }
           }
           for (f = d.parentElement; f;) {
-            if (c.g.contains(la(f))) {
+            if (c.g.contains(containsClosureUID(f))) {
               g = true;
               break a;
             }
@@ -4927,7 +5186,7 @@ Analyzed & Deobfuscated By: VXAZ
         cor: c.g,
         num: c.i++,
         dvc: Vd()
-      }, .1);
+      }, 0.1);
       c = f || g;
     }
     if (c) {
@@ -4942,7 +5201,7 @@ Analyzed & Deobfuscated By: VXAZ
     }
     f = A(b, Ch, 4) && (y(A(b, Ch, 4).A, 2) == null ? y(A(b, Ch, 4).A, 2) : Number.isFinite(y(A(b, Ch, 4).A, 2)) ? y(A(b, Ch, 4).A, 2) | 0 : undefined) ? y(A(b, Ch, 4).A, 2) == null ? y(A(b, Ch, 4).A, 2) : Number.isFinite(y(A(b, Ch, 4).A, 2)) ? y(A(b, Ch, 4).A, 2) | 0 : undefined : null;
     f = Fh(f);
-    g = Qb(y(b.A, 12)) != null ? Qb(y(b.A, 12)) : null;
+    g = Qb(y(b.A, 12)) ?? null;
     g = g == null ? null : new Eh(null, {
       google_ml_rank: g
     });
@@ -5053,14 +5312,22 @@ Analyzed & Deobfuscated By: VXAZ
       }
       v = true;
     }
-    return v ? c : null;
+    if (v) {
+      return c;
+    } else {
+      return null;
+    }
   }
   function Nk(a, b) {
-    return th(Lj(b).map(Gh), c => {
+    if (th(Lj(b).map(Gh), c => {
       (a.g.google_ama_state = a.g.google_ama_state || {}).exception = c;
-    }).g != null ? th(Lj(b).map(Gh), c => {
-      (a.g.google_ama_state = a.g.google_ama_state || {}).exception = c;
-    }).getValue() : null;
+    }).g != null) {
+      return th(Lj(b).map(Gh), c => {
+        (a.g.google_ama_state = a.g.google_ama_state || {}).exception = c;
+      }).getValue();
+    } else {
+      return null;
+    }
   }
   var Ok = class {
     constructor(a, b, c, d, e) {
@@ -5098,9 +5365,13 @@ Analyzed & Deobfuscated By: VXAZ
       b = null;
     }
     const c = b;
-    return c ? qh(() => Pk(c)) : new oh({
-      value: null
-    }, null);
+    if (c) {
+      return qh(() => Pk(c));
+    } else {
+      return new oh({
+        value: null
+      }, null);
+    }
   }
   function Rk() {
     if (Sk) {
@@ -5108,13 +5379,22 @@ Analyzed & Deobfuscated By: VXAZ
     }
     var a = oe() || window;
     const b = a.google_persistent_state_async;
-    return b != null && typeof b == "object" && b.S != null && typeof b.S == "object" ? Sk = b : a.google_persistent_state_async = Sk = new Tk();
+    if (b != null && typeof b == "object" && b.S != null && typeof b.S == "object") {
+      return Sk = b;
+    } else {
+      return a.google_persistent_state_async = Sk = new Tk();
+    }
   }
   function Wk(a, b, c) {
-    b = Vk[a] || "google_ps_".concat(b);
+    b = Vk[a] || `google_ps_${b}`;
     a = a.S;
     const d = a[b];
-    return d === undefined ? (a[b] = c(), a[b]) : d;
+    if (d === undefined) {
+      a[b] = c();
+      return a[b];
+    } else {
+      return d;
+    }
   }
   function Xk(a, b, c) {
     return Wk(a, b, () => c);
@@ -5156,7 +5436,7 @@ Analyzed & Deobfuscated By: VXAZ
     if (d === undefined) {
       d = -1;
     }
-    this.g.cookie = a + "=" + b + (f ? ";domain=" + f : "") + (e ? ";path=" + e : "") + (d < 0 ? "" : d == 0 ? ";expires=" + new Date(1970, 1, 1).toUTCString() : ";expires=" + new Date(Date.now() + d * 1E3).toUTCString()) + (g ? ";secure" : "") + (h != null ? ";samesite=" + h : "");
+    this.g.cookie = a + "=" + b + (f ? ";domain=" + f : "") + (e ? ";path=" + e : "") + (d < 0 ? "" : d == 0 ? ";expires=" + new Date(1970, 1, 1).toUTCString() : ";expires=" + new Date(Date.now() + d * 1000).toUTCString()) + (g ? ";secure" : "") + (h != null ? ";samesite=" + h : "");
   };
   Yk.prototype.get = function (a, b) {
     const c = a + "=";
@@ -5254,7 +5534,13 @@ Analyzed & Deobfuscated By: VXAZ
     if (a.gdprApplies !== undefined && typeof a.gdprApplies !== "boolean") {
       a.gdprApplies = undefined;
     }
-    return a.tcString !== undefined && typeof a.tcString !== "string" || a.listenerId !== undefined && typeof a.listenerId !== "number" ? 2 : a.cmpStatus && a.cmpStatus !== "error" ? 0 : 3;
+    if (a.tcString !== undefined && typeof a.tcString !== "string" || a.listenerId !== undefined && typeof a.listenerId !== "number") {
+      return 2;
+    } else if (a.cmpStatus && a.cmpStatus !== "error") {
+      return 0;
+    } else {
+      return 3;
+    }
   }
   function el(a) {
     if (a.gdprApplies === false) {
@@ -5263,9 +5549,18 @@ Analyzed & Deobfuscated By: VXAZ
     if (a.internalErrorState === undefined) {
       a.internalErrorState = dl(a);
     }
-    return a.cmpStatus === "error" || a.internalErrorState !== 0 ? a.internalBlockOnErrors ? (ie({
-      e: String(a.internalErrorState)
-    }, "tcfe"), false) : true : !(a.cmpStatus !== "loaded" || a.eventStatus !== "tcloaded" && a.eventStatus !== "useractioncomplete");
+    if (a.cmpStatus === "error" || a.internalErrorState !== 0) {
+      if (a.internalBlockOnErrors) {
+        ie({
+          e: String(a.internalErrorState)
+        }, "tcfe");
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return a.cmpStatus === "loaded" && (a.eventStatus === "tcloaded" || a.eventStatus === "useractioncomplete");
+    }
   }
   function fl(a) {
     if (a.g) {
@@ -5275,7 +5570,7 @@ Analyzed & Deobfuscated By: VXAZ
       let d = a.j;
       for (let e = 0; e < 50; ++e) {
         try {
-          var b = !(!d.frames || !d.frames.__tcfapiLocator);
+          var b = !!d.frames && !!d.frames.__tcfapiLocator;
         } catch {
           b = false;
         }
@@ -5382,7 +5677,7 @@ Analyzed & Deobfuscated By: VXAZ
           b = f;
           b.internalErrorState = dl(b);
           b.internalBlockOnErrors = this.G;
-          if (!(g && b.internalErrorState === 0)) {
+          if (!g || b.internalErrorState !== 0) {
             b.tcString = "tcunavailable";
             if (!g) {
               b.internalErrorState = 3;
@@ -5447,7 +5742,11 @@ Analyzed & Deobfuscated By: VXAZ
       return ml(a, $k(true));
     }
     b = Rk();
-    return (b = Xk(b, 24)) ? ml(a, ll(b)) : new oh(null, Error("tcunav"));
+    if (b = Xk(b, 24)) {
+      return ml(a, ll(b));
+    } else {
+      return new oh(null, Error("tcunav"));
+    }
   };
   function ol({
     l: a,
@@ -5471,7 +5770,7 @@ Analyzed & Deobfuscated By: VXAZ
                   a = true;
                   break b;
                 default:
-                  throw Error("Unhandled AutoGdprFeatureStatus: ".concat(a));
+                  throw Error(`Unhandled AutoGdprFeatureStatus: ${a}`);
               }
             } else {
               a = false;
@@ -5496,7 +5795,7 @@ Analyzed & Deobfuscated By: VXAZ
       };
       const c = Xk(b, 25, []);
       c.push(a);
-      b.S[Vk[a] || "google_ps_".concat(25)] = c;
+      b.S[Vk[a] || `google_ps_${25}`] = c;
     }).then(rl);
   }
   function ql(a, b) {
@@ -5505,9 +5804,13 @@ Analyzed & Deobfuscated By: VXAZ
     });
   }
   function rl(a) {
-    return a ? new oh({
-      value: a
-    }, null) : new oh(null, Error("tcnull"));
+    if (a) {
+      return new oh({
+        value: a
+      }, null);
+    } else {
+      return new oh(null, Error("tcnull"));
+    }
   }
   function ll(a) {
     var b = {};
@@ -5528,12 +5831,12 @@ Analyzed & Deobfuscated By: VXAZ
           a = false;
         } else if (a.purpose && a.vendor) {
           b = a.vendor.consents;
-          if ((b = !(!b || !b["755"])) && a.purposeOneTreatment && a.publisherCC === "CH") {
+          if ((b = !!b && !!b["755"]) && a.purposeOneTreatment && a.publisherCC === "CH") {
             a = true;
           } else {
             if (b) {
               a = a.purpose.consents;
-              b = !(!a || !a["1"]);
+              b = !!a && !!a["1"];
             }
             a = b;
           }
@@ -5549,9 +5852,13 @@ Analyzed & Deobfuscated By: VXAZ
     return $k(a);
   }
   function ml(a, b) {
-    return (a = Zk(b, a)) ? new oh({
-      value: a
-    }, null) : new oh(null, Error("unav"));
+    if (a = Zk(b, a)) {
+      return new oh({
+        value: a
+      }, null);
+    } else {
+      return new oh(null, Error("unav"));
+    }
   }
   var sl = class extends J {};
   var tl = class extends J {};
@@ -5611,13 +5918,13 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function zl(a) {
     if (!/^[0-1]+$/.test(a)) {
-      throw Error("Invalid input [".concat(a, "] not a bit string."));
+      throw Error(`Invalid input [${a}] not a bit string.`);
     }
     return parseInt(a, 2);
   }
   function Al(a) {
     if (!/^[0-1]+$/.test(a)) {
-      throw Error("Invalid input [".concat(a, "] not a bit string."));
+      throw Error(`Invalid input [${a}] not a bit string.`);
     }
     const b = [1, 2, 3, 5];
     let c = 0;
@@ -5642,7 +5949,7 @@ Analyzed & Deobfuscated By: VXAZ
     let e = b.slice(12).replace(/0+$/, "");
     for (let k = 0; k < c; k++) {
       if (e.length === 0) {
-        throw Error("Found ".concat(k, " of ", c, " sections [", d, "] but reached end of input [", b, "]"));
+        throw Error(`Found ${k} of ${c} sections [${d}] but reached end of input [${b}]`);
       }
       var f = zl(e[0]) === 0;
       e = e.slice(1);
@@ -5662,20 +5969,17 @@ Analyzed & Deobfuscated By: VXAZ
       }
     }
     if (e.length > 0) {
-      throw Error("Found ".concat(c, " sections [", d, "] but has remaining input [", e, "], entire input [", b, "]"));
+      throw Error(`Found ${c} sections [${d}] but has remaining input [${e}], entire input [${b}]`);
     }
     return xc(a, 3, d, Pb);
   }
   function Cl(a, b) {
     const c = a.indexOf("11");
     if (c === -1) {
-      throw Error("Expected section bitstring but not found in [".concat(a, "] part of [", b, "]"));
+      throw Error(`Expected section bitstring but not found in [${a}] part of [${b}]`);
     }
     return a.slice(0, c + 2);
-  }
-
-  // Dl = "a".charCodeAt()
-
+  } // Dl = "a".charCodeAt()
   var El = rd(dh);
   var Fl = rd(eh);
   function Gl() {
@@ -5691,12 +5995,12 @@ Analyzed & Deobfuscated By: VXAZ
     }
     b = b(c ?? "0");
     a = Qb(y(a.A, 2)) ?? 0;
-    return new Date(b * 1E3 + a / 1E6);
+    return new Date(b * 1000 + a / 1000000);
   }
   var Hl = class extends J {};
   function V(a, b) {
     if (a.g + b > a.i.length) {
-      throw Error("Requested length ".concat(b, " is past end of string."));
+      throw Error(`Requested length ${b} is past end of string.`);
     }
     const c = a.i.substring(a.g, a.g + b);
     a.g += b;
@@ -5705,7 +6009,7 @@ Analyzed & Deobfuscated By: VXAZ
   function Jl(a) {
     let b = V(a, 12);
     const c = [];
-    for (; b--;) {
+    while (b--) {
       var d = !!V(a, 1) === true;
       var e = V(a, 16);
       if (d) {
@@ -5725,7 +6029,7 @@ Analyzed & Deobfuscated By: VXAZ
       if (V(a, 1)) {
         const f = e + 1;
         if (c && c.indexOf(f) === -1) {
-          throw Error("ID: ".concat(f, " is outside of allowed values!"));
+          throw Error(`ID: ${f} is outside of allowed values!`);
         }
         d.push(f);
       }
@@ -5734,16 +6038,22 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function Ll(a) {
     const b = V(a, 16);
-    return !!V(a, 1) === true ? (a = Jl(a), a.forEach(c => {
-      if (c > b) {
-        throw Error("ID ".concat(c, " is past MaxVendorId ", b, "!"));
-      }
-    }), a) : Kl(a, b);
+    if (!!V(a, 1) === true) {
+      a = Jl(a);
+      a.forEach(c => {
+        if (c > b) {
+          throw Error(`ID ${c} is past MaxVendorId ${b}!`);
+        }
+      });
+      return a;
+    } else {
+      return Kl(a, b);
+    }
   }
   var Ml = class {
     constructor(a) {
       if (/[^01]/.test(a)) {
-        throw Error("Input bitstring ".concat(a, " is malformed!"));
+        throw Error(`Input bitstring ${a} is malformed!`);
       }
       this.i = a;
       this.g = 0;
@@ -5752,7 +6062,7 @@ Analyzed & Deobfuscated By: VXAZ
       this.g += a;
     }
   };
-  var Ol = (a, b) => {
+  var formatClientData = (a, b) => {
     try {
       var c = Ta(a.split(".")[0]).map(e => e.toString(2).padStart(8, "0")).join("");
       const d = new Ml(c);
@@ -5785,9 +6095,13 @@ Analyzed & Deobfuscated By: VXAZ
   const Nl = (a, b) => {
     const c = {};
     if (Array.isArray(b) && b.length !== 0) {
-      for (const d of b) c[d] = a.indexOf(d) !== -1;
+      for (const d of b) {
+        c[d] = a.indexOf(d) !== -1;
+      }
     } else {
-      for (const d of a) c[d] = true;
+      for (const d of a) {
+        c[d] = true;
+      }
     }
     delete c[0];
     return c;
@@ -5811,7 +6125,11 @@ Analyzed & Deobfuscated By: VXAZ
     } catch (c) {
       b = null;
     }
-    return b ? A(b, Rl, 4) || null : null;
+    if (b) {
+      return A(b, Rl, 4) || null;
+    } else {
+      return null;
+    }
   }
   function Ul(a) {
     a = new Yk(a).get("FCCDCF", "");
@@ -5932,7 +6250,7 @@ Analyzed & Deobfuscated By: VXAZ
       p = k(p);
       m = h(m.slice(6, 10));
       m = n(m);
-      return "1".concat(p, m, "N");
+      return `1${p}${m}N`;
     }
     function d(m) {
       if (m.length < 10) {
@@ -5942,7 +6260,7 @@ Analyzed & Deobfuscated By: VXAZ
       p = k(p);
       m = h(m.slice(6, 10));
       m = n(m);
-      return "1".concat(p, m, "N");
+      return `1${p}${m}N`;
     }
     function e(m) {
       if (m.length < 12) {
@@ -5952,7 +6270,7 @@ Analyzed & Deobfuscated By: VXAZ
       p = k(p);
       m = h(m.slice(8, 12));
       m = n(m);
-      return "1".concat(p, m, "N");
+      return `1${p}${m}N`;
     }
     function f(m) {
       if (m.length < 18) {
@@ -5962,7 +6280,7 @@ Analyzed & Deobfuscated By: VXAZ
       p = k(p);
       m = h(m.slice(12, 18));
       m = n(m);
-      return "1".concat(p, m, "N");
+      return `1${p}${m}N`;
     }
     function g(m) {
       if (m.length < 10) {
@@ -5972,7 +6290,7 @@ Analyzed & Deobfuscated By: VXAZ
       p = k(p);
       m = h(m.slice(6, 10));
       m = n(m);
-      return "1".concat(p, m, "N");
+      return `1${p}${m}N`;
     }
     function h(m) {
       const p = [];
@@ -5984,10 +6302,18 @@ Analyzed & Deobfuscated By: VXAZ
       return p;
     }
     function k(m) {
-      return m.every(p => p === 1) ? "Y" : "N";
+      if (m.every(p => p === 1)) {
+        return "Y";
+      } else {
+        return "N";
+      }
     }
     function n(m) {
-      return m.some(p => p === 1) ? "Y" : "N";
+      if (m.some(p => p === 1)) {
+        return "Y";
+      } else {
+        return "N";
+      }
     }
     if (a.length === 0) {
       return null;
@@ -6043,19 +6369,23 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function em(a) {
     if (a != null) {
-      return a >= unsignedMinSafeInteger && a <= unsignedMaxSafeInteger ? Number(a) : String(a);
+      if (a >= unsignedMinSafeInteger && a <= unsignedMaxSafeInteger) {
+        return Number(a);
+      } else {
+        return String(a);
+      }
     }
   }
   function gm(a) {
     var b = K($d).j(wi.g, wi.defaultValue);
-    if (!(window !== window.top || window.__uspapi || window.frames.__uspapiLocator)) {
+    if (window === window.top && !window.__uspapi && !window.frames.__uspapiLocator) {
       a = new hm(a, b);
       im(a);
       jm(a);
     }
   }
   function im(a) {
-    if (!(!a.u || a.l.__uspapi || a.l.frames.__uspapiLocator)) {
+    if (!!a.u && !a.l.__uspapi && !a.l.frames.__uspapiLocator) {
       a.l.__uspapiManager = "fc";
       dm(a.l, "__uspapiLocator");
       ra("__uspapi", (b, c, d) => {
@@ -6071,7 +6401,7 @@ Analyzed & Deobfuscated By: VXAZ
     }
   }
   function jm(a) {
-    if (!(!a.tcString || a.l.__tcfapi || a.l.frames.__tcfapiLocator)) {
+    if (!!a.tcString && !a.l.__tcfapi && !a.l.frames.__tcfapiLocator) {
       a.l.__tcfapiManager = "fc";
       dm(a.l, "__tcfapiLocator");
       a.l.__tcfapiEventListeners = a.l.__tcfapiEventListeners || [];
@@ -6099,8 +6429,8 @@ Analyzed & Deobfuscated By: VXAZ
                 b = !c;
                 --e;
                 if (a.tcString) {
-                  b = Ol(a.tcString, b);
-                  b.addtlConsent = a.g != null ? a.g : undefined;
+                  b = formatClientData(a.tcString, b);
+                  b.addtlConsent = a.g ?? undefined;
                   b.cmpStatus = "loaded";
                   b.eventStatus = "tcloaded";
                   if (e != null) {
@@ -6150,13 +6480,21 @@ Analyzed & Deobfuscated By: VXAZ
       g = g >= unsignedMinSafeInteger && g <= unsignedMaxSafeInteger ? Number(g) : String(g);
       var h = pc(f, Hl, 2) ? A(f, Hl, 2) : Gl();
       h = Lc(h, 1) ?? mc;
-      return g > (h >= unsignedMinSafeInteger && h <= unsignedMaxSafeInteger ? Number(h) : String(h)) ? e : f;
+      if (g > (h >= unsignedMinSafeInteger && h <= unsignedMaxSafeInteger ? Number(h) : String(h))) {
+        return e;
+      } else {
+        return f;
+      }
     });
     d = rc(d, 3, Qb, 4).indexOf(Qb(y(a.A, 1)) ?? 0);
-    return d === -1 || d >= c.length ? null : {
-      uspString: cm(c[d], Qb(y(a.A, 1)) ?? 0),
-      wa: Il(pc(a, Hl, 2) ? A(a, Hl, 2) : Gl())
-    };
+    if (d === -1 || d >= c.length) {
+      return null;
+    } else {
+      return {
+        uspString: cm(c[d], Qb(y(a.A, 1)) ?? 0),
+        wa: Il(pc(a, Hl, 2) ? A(a, Hl, 2) : Gl())
+      };
+    }
   }
   function mm(a) {
     a = a.find(b => b && ((y(b.A, 1) == null ? y(b.A, 1) : Number.isFinite(y(b.A, 1)) ? y(b.A, 1) | 0 : undefined) ?? 0) === 13);
@@ -6218,7 +6556,7 @@ Analyzed & Deobfuscated By: VXAZ
     if (a.location.href && a.location.href.substring) {
       b.url = a.location.href.substring(0, 200);
     }
-    kk("ama", b, .01);
+    kk("ama", b, 0.01);
   }
   function pm(a) {
     const b = {};
@@ -6294,7 +6632,7 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function vm(a) {
     const b = {};
-    for (;;) {
+    while (true) {
       b[Qd(a)] = true;
       if (!a) {
         return b;
@@ -6305,11 +6643,15 @@ Analyzed & Deobfuscated By: VXAZ
   function wm(a) {
     a = a.google_ad_modifications = a.google_ad_modifications || {};
     const b = a.space_collapsing || "none";
-    return a.remove_ads_by_default ? {
-      Qa: true,
-      Kb: b,
-      ta: a.ablation_viewport_offset
-    } : null;
+    if (a.remove_ads_by_default) {
+      return {
+        Qa: true,
+        Kb: b,
+        ta: a.ablation_viewport_offset
+      };
+    } else {
+      return null;
+    }
   }
   function xm(a) {
     a = a.google_ad_modifications = a.google_ad_modifications || {};
@@ -6330,11 +6672,19 @@ Analyzed & Deobfuscated By: VXAZ
   }
   const Cm = [2, 7, 1];
   function Dm(a, b, c, d = "") {
-    return b === 1 && c && (Em(a, d, c)?.j() ?? false) ? true : Fm(a, d, e => La(B(e, ed, 2, 4), f => (y(f.A, 1) == null ? y(f.A, 1) : Number.isFinite(y(f.A, 1)) ? y(f.A, 1) | 0 : undefined) === b), K($d).j(Ci.g, Ci.defaultValue) ? !!A(c, Gm, 26)?.g() : Mc(c, 6) ?? false);
+    if (b === 1 && c && (Em(a, d, c)?.j() ?? false)) {
+      return true;
+    } else {
+      return Fm(a, d, e => La(B(e, ed, 2, 4), f => (y(f.A, 1) == null ? y(f.A, 1) : Number.isFinite(y(f.A, 1)) ? y(f.A, 1) | 0 : undefined) === b), K($d).j(Ci.g, Ci.defaultValue) ? !!A(c, Gm, 26)?.g() : Mc(c, 6) ?? false);
+    }
   }
   function Hm(a, b) {
     const c = (Jd(window.top) ? window.top : null) || window;
-    return Im(c, a) ? true : Fm(window, "", d => La(rc(d, 3, Ob, 4), e => e === a), b);
+    if (Im(c, a)) {
+      return true;
+    } else {
+      return Fm(window, "", d => La(rc(d, 3, Ob, 4), e => e === a), b);
+    }
   }
   function Im(a, b) {
     a = (a = (a = a.location && a.location.hash) && a.match(/forced_clientside_labs=([\d,]+)/)) && a[1];
@@ -6364,7 +6714,11 @@ Analyzed & Deobfuscated By: VXAZ
       l: a,
       aa: b
     });
-    return a.g != null ? Lm(a.getValue()) : {};
+    if (a.g != null) {
+      return Lm(a.getValue());
+    } else {
+      return {};
+    }
   }
   function Lm(a) {
     try {
@@ -6373,7 +6727,11 @@ Analyzed & Deobfuscated By: VXAZ
         return {};
       }
       const c = JSON.parse(b);
-      return c !== Object(c) ? {} : pd(c, (d, e) => Object.prototype.hasOwnProperty.call(c, e) && typeof e === "string" && Array.isArray(d));
+      if (c !== Object(c)) {
+        return {};
+      } else {
+        return pd(c, (d, e) => Object.prototype.hasOwnProperty.call(c, e) && typeof e === "string" && Array.isArray(d));
+      }
     } catch (b) {
       return {};
     }
@@ -6398,7 +6756,11 @@ Analyzed & Deobfuscated By: VXAZ
     }
     const d = A(c, Tp, Dc(c, Up) === 27 ? 27 : -1)?.D();
     a = A(c, Tp, Dc(c, Up) === 27 ? 27 : -1)?.g()?.g() === b && a.location.host && ((y(c.A, 17) == null || typeof y(c.A, 17) === "string" ? y(c.A, 17) : undefined) ?? "") === a.location.host;
-    return d === b || a ? A(c, Tp, Dc(c, Up) === 27 ? 27 : -1) : null;
+    if (d === b || a) {
+      return A(c, Tp, Dc(c, Up) === 27 ? 27 : -1);
+    } else {
+      return null;
+    }
   }
   function Om(a, b, c, d) {
     Pm(new Qm(a, b, c, d));
@@ -6460,9 +6822,13 @@ Analyzed & Deobfuscated By: VXAZ
     } catch (d) {
       c = null;
     }
-    return (a = (a = c) ? (em(A(a, gj, 3)?.g()) ?? 0) > Date.now() ? a : null : null) ? new oh({
-      value: a
-    }, null) : new oh(null, Error("invlocst"));
+    if (a = (a = c) ? (em(A(a, gj, 3)?.g()) ?? 0) > Date.now() ? a : null : null) {
+      return new oh({
+        value: a
+      }, null);
+    } else {
+      return new oh(null, Error("invlocst"));
+    }
   }
   function Vm(a) {
     if (((a.l.google_ad_modifications = a.l.google_ad_modifications || {})?.head_tag_slot_vars?.google_ad_host ?? a.l.document?.querySelector("meta[name=\"google-adsense-platform-account\"]")?.getAttribute("content") ?? null) && !(Mc(a.g, 22) ?? false)) {
@@ -6506,8 +6872,8 @@ Analyzed & Deobfuscated By: VXAZ
       status: a,
       guarding: "true",
       timeout: 50,
-      rate: .01
-    }, .01);
+      rate: 0.01
+    }, 0.01);
   }
   class Qm {
     constructor(a, b, c, d) {
@@ -6528,7 +6894,7 @@ Analyzed & Deobfuscated By: VXAZ
           d = Dh(d, h);
         }
         const g = new Ok(a, b, c, f, d);
-        Cj(1E3, () => {
+        Cj(1000, () => {
           const h = new ih();
           new wl(a, g, h).start();
           return h.i;
@@ -6561,7 +6927,7 @@ Analyzed & Deobfuscated By: VXAZ
       return true;
     }
     b = bn(b);
-    return !!(b != "go" && a.indexOf(b) != -1);
+    return b != "go" && a.indexOf(b) != -1;
   }
   function bn(a) {
     let b = "";
@@ -6658,12 +7024,11 @@ Analyzed & Deobfuscated By: VXAZ
       Ld(self.document, a);
     }).promise;
   }
-
   /*
-    Array.from({
-      length: 11
-    }, (a, b) => b / 10)
-  */
+     Array.from({
+       length: 11
+     }, (a, b) => b / 10)
+   */
   //  [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
   function ln(a) {
     if (a.google_reactive_ads_global_state) {
@@ -6709,14 +7074,14 @@ Analyzed & Deobfuscated By: VXAZ
     }
   };
   /*
-    var nn = class {
-      constructor() {
-        this.maxZIndexRestrictions = {};
-        this.nextRestrictionId = 0;
-        this.maxZIndexListeners = [];
-      }
-    };
-  */
+     var nn = class {
+       constructor() {
+         this.maxZIndexRestrictions = {};
+         this.nextRestrictionId = 0;
+         this.maxZIndexListeners = [];
+       }
+     };
+   */
   var on = a => {
     if (self.google_apltlad || a.google_ad_intent_query) {
       return null;
@@ -6787,14 +7152,14 @@ Analyzed & Deobfuscated By: VXAZ
     });
   }
   /*
-    class rn {
-      constructor(a, b) {
-        this.l = self;
-        this.g = a;
-        this.i = b;
-      }
-    }
-  */
+     class rn {
+       constructor(a, b) {
+         this.l = self;
+         this.g = a;
+         this.i = b;
+       }
+     }
+   */
   function sn(a, b, c, d) {
     if (d) {
       (a.google_ama_state = a.google_ama_state || {}).configSourceInAbg = d;
@@ -6804,7 +7169,7 @@ Analyzed & Deobfuscated By: VXAZ
       d.availableAbg = true;
       d.ablationFromStorage = !!A(c, rj, 24)?.g()?.g();
     }
-    if (ka(b.enable_page_level_ads) && b.enable_page_level_ads.google_pgb_reactive === 7) {
+    if (isObjectOrFunction(b.enable_page_level_ads) && b.enable_page_level_ads.google_pgb_reactive === 7) {
       if (!um(a, B(c, nj, 7, 4))) {
         kk("amaait", {
           value: "true"
@@ -6824,7 +7189,7 @@ Analyzed & Deobfuscated By: VXAZ
       xm(a);
     }
     le(3, [w(c)]);
-    b = pm(ka(b.enable_page_level_ads) ? b.enable_page_level_ads : {});
+    b = pm(isObjectOrFunction(b.enable_page_level_ads) ? b.enable_page_level_ads : {});
     const f = Dh(Hh, new Eh(null, b));
     dk.g(782, () => {
       Ym(a, b.google_ad_client || "", c, f);
@@ -6833,7 +7198,8 @@ Analyzed & Deobfuscated By: VXAZ
   function tn(a, b) {
     a = a.document;
     var c = undefined;
-    for (var d = 0; !c || a.getElementById(c + "_host");) {
+    var d = 0;
+    while (!c || a.getElementById(c + "_host")) {
       c = "aswift_" + d++;
     }
     a = c;
@@ -6906,12 +7272,12 @@ Analyzed & Deobfuscated By: VXAZ
     if (typeof a.navigator?.userAgentData?.getHighEntropyValues !== "function") {
       return null;
     }
-    const b = a.google_tag_data ?? (a.google_tag_data = {});
+    const b = a.google_tag_data ??= {};
     if (b.uach_promise) {
       return b.uach_promise;
     }
     a = a.navigator.userAgentData.getHighEntropyValues(Jn).then(c => {
-      b.uach ?? (b.uach = c);
+      b.uach ??= c;
       return c;
     });
     return b.uach_promise = a;
@@ -6970,7 +7336,7 @@ Analyzed & Deobfuscated By: VXAZ
         if (a = a || (d.google_ad_client ? String(d.google_ad_client) : (d.google_ad_modifications = d.google_ad_modifications || {}).head_tag_slot_vars?.google_ad_client ?? d.document.querySelector(".adsbygoogle[data-ad-client]")?.getAttribute("data-ad-client") ?? "")) {
           b: {
             try {
-              for (; d;) {
+              while (d) {
                 if (d.location?.hostname) {
                   var e = d.location.hostname;
                   break b;
@@ -7040,7 +7406,7 @@ Analyzed & Deobfuscated By: VXAZ
     var e = c.google_ad_format;
     var f = c.google_ad_width || 0;
     var g = c.google_ad_height || 0;
-    if (!(e || d !== "html" && d != null)) {
+    if (!e && (d === "html" || d == null)) {
       e = String(f).concat("x", g);
     }
     if (K($d).j(Bi.g, Bi.defaultValue)) {
@@ -7085,7 +7451,7 @@ Analyzed & Deobfuscated By: VXAZ
               const l = h[n];
               if (l.nodeName && l.nodeName.toString().toLowerCase() === g) {
                 if (b === l) {
-                  g = ".".concat(k);
+                  g = `.${k}`;
                   break a;
                 }
                 ++k;
@@ -7147,7 +7513,11 @@ Analyzed & Deobfuscated By: VXAZ
       return this.u;
     }
     i(a) {
-      return a > K($d).u(ei.g, ei.defaultValue) && this.u > 300 ? this.g : Math.min(1200, Math.round(a));
+      if (a > K($d).u(ei.g, ei.defaultValue) && this.u > 300) {
+        return this.g;
+      } else {
+        return Math.min(1200, Math.round(a));
+      }
     }
     j() {}
   };
@@ -7224,7 +7594,10 @@ Analyzed & Deobfuscated By: VXAZ
     }
     if (b.length > 2) {
       return {
-        X: "The parameter length of attribute data-matched-content-ui-type, data-matched-content-columns-num and data-matched-content-rows-num is too long. At most 2 parameters for each attribute are needed: one for mobile and one for desktop, while " + `you are providing ${b.length} parameters. Example: ${"\n data-matched-content-rows-num=\"4,2\"\ndata-matched-content-columns-num=\"1,6\"\ndata-matched-content-ui-type=\"image_stacked,image_card_sidebyside\""}.`
+        X: `The parameter length of attribute data-matched-content-ui-type, data-matched-content-columns-num and data-matched-content-rows-num is too long. At most 2 parameters for each attribute are needed: one for mobile and one for desktop, while you are providing ${b.length} parameters. Example: 
+ data-matched-content-rows-num="4,2"
+data-matched-content-columns-num="1,6"
+data-matched-content-ui-type="image_stacked,image_card_sidebyside".`
       };
     }
     const d = [];
@@ -7233,14 +7606,14 @@ Analyzed & Deobfuscated By: VXAZ
       var f = Number(c[g]);
       if (Number.isNaN(f) || f === 0) {
         return {
-          X: "Wrong value '".concat(c[g], "' for ", "data-matched-content-rows-num", ".")
+          X: `Wrong value '${c[g]}' for data-matched-content-rows-num.`
         };
       }
       d.push(f);
       f = Number(a[g]);
       if (Number.isNaN(f) || f === 0) {
         return {
-          X: "Wrong value '".concat(a[g], "' for ", "data-matched-content-columns-num", ".")
+          X: `Wrong value '${a[g]}' for data-matched-content-columns-num.`
         };
       }
       e.push(f);
@@ -7252,26 +7625,32 @@ Analyzed & Deobfuscated By: VXAZ
     };
   }
   function co(a, b, c, d) {
-    b = Math.floor(((a - 8 * b - 8) / b * Yn[d] + Zn[d]) * c + 8 * c + 8);
-    return a > 1500 ? {
-      width: 0,
-      height: 0,
-      Ib: "Calculated slot width is too large: ".concat(a)
-    } : b > 1500 ? {
-      width: 0,
-      height: 0,
-      Ib: "Calculated slot height is too large: ".concat(b)
-    } : {
-      width: a,
-      height: b
-    };
+    b = Math.floor(((a - b * 8 - 8) / b * Yn[d] + Zn[d]) * c + c * 8 + 8);
+    if (a > 1500) {
+      return {
+        width: 0,
+        height: 0,
+        Ib: `Calculated slot width is too large: ${a}`
+      };
+    } else if (b > 1500) {
+      return {
+        width: 0,
+        height: 0,
+        Ib: `Calculated slot height is too large: ${b}`
+      };
+    } else {
+      return {
+        width: a,
+        height: b
+      };
+    }
   }
   function eo(a, b) {
     const c = a - 8 - 8;
     --b;
     return {
       width: a,
-      height: Math.floor(c / 1.91 + 70) + Math.floor((c * 0.2617801047120419 + 0) * b + 8 * b + 8)
+      height: Math.floor(c / 1.91 + 70) + Math.floor((c * 0.2617801047120419 + 0) * b + b * 8 + 8)
     };
   }
   var go = class {
@@ -7305,7 +7684,7 @@ Analyzed & Deobfuscated By: VXAZ
       return new go(9, new io(a, Math.floor(a * 2.189)));
     }
     if (K($d).j(Th.g, Th.defaultValue)) {
-      var c = !(navUserAgent.indexOf("iPad") != -1 || navUserAgent.indexOf("Android") != -1 && !(navUserAgent.indexOf("Mobile") != -1) || navUserAgent.indexOf("Silk") != -1) && (navUserAgent.indexOf("iPod") != -1 || navUserAgent.indexOf("iPhone") != -1 || navUserAgent.indexOf("Android") != -1 || navUserAgent.indexOf("IEMobile") != -1);
+      var c = navUserAgent.indexOf("iPad") == -1 && (navUserAgent.indexOf("Android") == -1 || navUserAgent.indexOf("Mobile") != -1) && navUserAgent.indexOf("Silk") == -1 && (navUserAgent.indexOf("iPod") != -1 || navUserAgent.indexOf("iPhone") != -1 || navUserAgent.indexOf("Android") != -1 || navUserAgent.indexOf("IEMobile") != -1);
       var d = K($d).u(Uh.g, Uh.defaultValue);
       var e = K($d).u(Sh.g, Sh.defaultValue);
       var f = K($d).u(Rh.g, Rh.defaultValue);
@@ -7335,19 +7714,19 @@ Analyzed & Deobfuscated By: VXAZ
           height: 600
         } : a >= 850 ? {
           width: a,
-          height: Math.floor(a * .5)
+          height: Math.floor(a * 0.5)
         } : a >= 550 ? {
           width: a,
-          height: Math.floor(a * .6)
+          height: Math.floor(a * 0.6)
         } : a >= 468 ? {
           width: a,
-          height: Math.floor(a * .7)
+          height: Math.floor(a * 0.7)
         } : {
           width: a,
           height: Math.floor(a * 3.44)
         };
         if (e === 1) {
-          d.height = Math.floor(d.height * .5);
+          d.height = Math.floor(d.height * 0.5);
         }
         d = {
           W: d.width,
@@ -7358,7 +7737,7 @@ Analyzed & Deobfuscated By: VXAZ
         };
       }
     } else {
-      d = !(navUserAgent.indexOf("iPad") != -1 || navUserAgent.indexOf("Android") != -1 && !(navUserAgent.indexOf("Mobile") != -1) || navUserAgent.indexOf("Silk") != -1) && (navUserAgent.indexOf("iPod") != -1 || navUserAgent.indexOf("iPhone") != -1 || navUserAgent.indexOf("Android") != -1 || navUserAgent.indexOf("IEMobile") != -1);
+      d = navUserAgent.indexOf("iPad") == -1 && (navUserAgent.indexOf("Android") == -1 || navUserAgent.indexOf("Mobile") != -1) && navUserAgent.indexOf("Silk") == -1 && (navUserAgent.indexOf("iPod") != -1 || navUserAgent.indexOf("iPhone") != -1 || navUserAgent.indexOf("Android") != -1 || navUserAgent.indexOf("IEMobile") != -1);
       if (a < 468) {
         if (d) {
           d = eo(a, 12);
@@ -7375,13 +7754,13 @@ Analyzed & Deobfuscated By: VXAZ
             height: 600
           } : a >= 850 ? {
             width: a,
-            height: Math.floor(a * .5)
+            height: Math.floor(a * 0.5)
           } : a >= 550 ? {
             width: a,
-            height: Math.floor(a * .6)
+            height: Math.floor(a * 0.6)
           } : a >= 468 ? {
             width: a,
-            height: Math.floor(a * .7)
+            height: Math.floor(a * 0.7)
           } : {
             width: a,
             height: Math.floor(a * 3.44)
@@ -7400,13 +7779,13 @@ Analyzed & Deobfuscated By: VXAZ
           height: 600
         } : a >= 850 ? {
           width: a,
-          height: Math.floor(a * .5)
+          height: Math.floor(a * 0.5)
         } : a >= 550 ? {
           width: a,
-          height: Math.floor(a * .6)
+          height: Math.floor(a * 0.6)
         } : a >= 468 ? {
           width: a,
-          height: Math.floor(a * .7)
+          height: Math.floor(a * 0.7)
         } : {
           width: a,
           height: Math.floor(a * 3.44)
@@ -7446,7 +7825,7 @@ Analyzed & Deobfuscated By: VXAZ
         d = d.indexOf("pub_control_") === 0 ? d : "pub_control_" + d;
         var e = $n[d];
         let g = f.K[c];
-        for (; a / g < e && g > 1;) {
+        while (a / g < e && g > 1) {
           g--;
         }
         e = g;
@@ -7469,7 +7848,7 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function ko(a, b) {
     if (a <= 0) {
-      throw new T("Invalid responsive width from Matched Content slot ".concat(b.google_ad_slot, ": ", a, ". Please ensure to put this Matched Content slot into a non-zero width div container."));
+      throw new T(`Invalid responsive width from Matched Content slot ${b.google_ad_slot}: ${a}. Please ensure to put this Matched Content slot into a non-zero width div container.`);
     }
   }
   function lo(a, b) {
@@ -7488,10 +7867,10 @@ Analyzed & Deobfuscated By: VXAZ
     }
   };
   const oo = {
-    "image-top": a => a <= 600 ? 284 + (a - 250) * .414 : 429,
-    "image-middle": a => a <= 500 ? 196 - (a - 250) * .13 : 164 + (a - 500) * .2,
-    "image-side": a => a <= 500 ? 205 - (a - 250) * .28 : 134 + (a - 500) * .21,
-    "text-only": a => a <= 500 ? 187 - .228 * (a - 250) : 130,
+    "image-top": a => a <= 600 ? 284 + (a - 250) * 0.414 : 429,
+    "image-middle": a => a <= 500 ? 196 - (a - 250) * 0.13 : 164 + (a - 500) * 0.2,
+    "image-side": a => a <= 500 ? 205 - (a - 250) * 0.28 : 134 + (a - 500) * 0.21,
+    "text-only": a => a <= 500 ? 187 - (a - 250) * 0.228 : 130,
     "in-article": a => a <= 420 ? a / 1.2 : a <= 460 ? a / 1.91 + 130 : a <= 800 ? a / 4 : 200
   };
   var po = class extends Wn {
@@ -7538,13 +7917,13 @@ Analyzed & Deobfuscated By: VXAZ
       }
     }
     if (a < 250) {
-      throw new T("Fluid responsive ads must be at least 250px wide: ".concat("availableWidth=", a));
+      throw new T(`Fluid responsive ads must be at least 250px wide: availableWidth=${a}`);
     }
     a = Math.min(1200, Math.floor(a));
     if (d && f !== "in-article") {
       f = Math.ceil(d);
       if (f < 50) {
-        throw new T("Fluid responsive ads must be at least 50px tall: ".concat("height=", f));
+        throw new T(`Fluid responsive ads must be at least 50px tall: height=${f}`);
       }
       return new go(11, new Wn(a, f));
     }
@@ -7553,15 +7932,15 @@ Analyzed & Deobfuscated By: VXAZ
       if (d = (c = f.match(/([+-][0-9a-z]+)/g)) && c.length) {
         b = [];
         for (e = 0; e < d; e++) {
-          b.push(parseInt(c[e], 36) / 1E3);
+          b.push(parseInt(c[e], 36) / 1000);
         }
       } else {
         b = null;
       }
       if (!b) {
-        throw new T("Invalid data-ad-layout-key value: ".concat(f));
+        throw new T(`Invalid data-ad-layout-key value: ${f}`);
       }
-      f = (a + -725) / 1E3;
+      f = (a + -725) / 1000;
       c = 0;
       d = 1;
       e = b.length;
@@ -7569,15 +7948,15 @@ Analyzed & Deobfuscated By: VXAZ
         c += b[g] * d;
         d *= f;
       }
-      f = Math.ceil(c * 1E3 + 725 + 10);
+      f = Math.ceil(c * 1000 + 725 + 10);
       if (isNaN(f)) {
-        throw new T("Invalid height: height=".concat(f));
+        throw new T(`Invalid height: height=${f}`);
       }
       if (f < 50) {
-        throw new T("Fluid responsive ads must be at least 50px tall: height=".concat(f));
+        throw new T(`Fluid responsive ads must be at least 50px tall: height=${f}`);
       }
       if (f > 1200) {
-        throw new T("Fluid responsive ads must be at most 1200px tall: height=".concat(f));
+        throw new T(`Fluid responsive ads must be at most 1200px tall: height=${f}`);
       }
       return new go(11, new Wn(a, f));
     }
@@ -7678,16 +8057,22 @@ Analyzed & Deobfuscated By: VXAZ
       H: f,
       F: g
     } = c;
-    return g !== true ? {
-      H: a,
-      F: g
-    } : d.parentElement ? {
-      H: f,
-      F: g
-    } : {
-      H: a,
-      F: g
-    };
+    if (g !== true) {
+      return {
+        H: a,
+        F: g
+      };
+    } else if (d.parentElement) {
+      return {
+        H: f,
+        F: g
+      };
+    } else {
+      return {
+        H: a,
+        F: g
+      };
+    }
   }
   function wo(a, b, c, d, e) {
     const {
@@ -7736,7 +8121,7 @@ Analyzed & Deobfuscated By: VXAZ
     }
     const m = so(ro(l), ro(n));
     if (!m) {
-      throw new T("No slot size for availableWidth=".concat(a));
+      throw new T(`No slot size for availableWidth=${a}`);
     }
     const {
       V: p,
@@ -7769,7 +8154,7 @@ Analyzed & Deobfuscated By: VXAZ
           } while (x.parentElement && (x = x.parentElement) && x.tagName !== "HTML");
           x = M;
         }
-        if (!(K($d).j(ai.g, ai.defaultValue) && x <= t * 2) && (x = Math.min(t, x), x < t * .5 || x < 100)) {
+        if ((!K($d).j(ai.g, ai.defaultValue) || !(x <= t * 2)) && (x = Math.min(t, x), x < t * 0.5 || x < 100)) {
           x = t;
         }
         t = {
@@ -7784,17 +8169,21 @@ Analyzed & Deobfuscated By: VXAZ
       }
       return t;
     }, undefined);
-    return e.google_ad_layout === "in-article" ? {
-      V: Ao(a, c, d, p, e),
-      P: false,
-      Z: b,
-      Wa: g
-    } : {
-      V: p,
-      P: v,
-      Z: b,
-      Wa: g
-    };
+    if (e.google_ad_layout === "in-article") {
+      return {
+        V: Ao(a, c, d, p, e),
+        P: false,
+        Z: b,
+        Wa: g
+      };
+    } else {
+      return {
+        V: p,
+        P: v,
+        Z: b,
+        Wa: g
+      };
+    }
   }
   function yo(a, b) {
     if (a === "auto") {
@@ -7822,11 +8211,13 @@ Analyzed & Deobfuscated By: VXAZ
   function zo(a, b, c) {
     if (c === "auto") {
       c = Math.min(1200, Ji(a).clientWidth ?? undefined);
-      b = b / c <= .25 ? 4 : 3;
+      b = b / c <= 0.25 ? 4 : 3;
     } else {
       b = 0;
-      for (const d in Hi) if (c.indexOf(d) !== -1) {
-        b |= Hi[d];
+      for (const d in Hi) {
+        if (c.indexOf(d) !== -1) {
+          b |= Hi[d];
+        }
       }
     }
     return b;
@@ -7834,7 +8225,11 @@ Analyzed & Deobfuscated By: VXAZ
   function Ao(a, b, c, d, e) {
     const f = e.google_ad_height || Vi(c, b, "height");
     b = qo(a, b, c, f, e).size();
-    return b.g * b.height() > a * d.height() ? new Y(b.g, b.height(), 1) : d;
+    if (b.g * b.height() > a * d.height()) {
+      return new Y(b.g, b.height(), 1);
+    } else {
+      return d;
+    }
   }
   function Bo(a, b, c, d, e) {
     var f;
@@ -7888,14 +8283,20 @@ Analyzed & Deobfuscated By: VXAZ
       }
       a: {
         if (a.google_content_recommendation_ui_type !== "pedestal") {
-          for (const c of ho) if (a[c] != null) {
-            a = true;
-            break a;
+          for (const c of ho) {
+            if (a[c] != null) {
+              a = true;
+              break a;
+            }
           }
         }
         a = false;
       }
-      return a ? 9 : 5;
+      if (a) {
+        return 9;
+      } else {
+        return 5;
+      }
     }
     if (b === "auto" || /^((^|,) *(horizontal|vertical|rectangle) *)+$/.test(b)) {
       return 1;
@@ -7904,7 +8305,12 @@ Analyzed & Deobfuscated By: VXAZ
       return 4;
     }
     if (b === "fluid") {
-      return a.google_ad_layout === "in-article" ? (Do(a), 1) : 8;
+      if (a.google_ad_layout === "in-article") {
+        Do(a);
+        return 1;
+      } else {
+        return 8;
+      }
     }
     if (a.google_reactive_ad_format === 27) {
       Do(a);
@@ -7985,8 +8391,8 @@ Analyzed & Deobfuscated By: VXAZ
           value: "DUMMY_AD"
         }]
       });
-      c.dash = `<${"script"}>window.top.postMessage('${f}', '*'); 
-          </${"script"}> 
+      c.dash = `<script>window.top.postMessage('${f}', '*'); 
+          </script> 
           <div id="dummyAd" style="width:${d}px;height:${g}px; 
             background:#ddd;border:3px solid #f00;box-sizing:border-box; 
             color:#000;"> 
@@ -8066,16 +8472,18 @@ Analyzed & Deobfuscated By: VXAZ
         b.google_ad_host = c;
       }
     }
-    for (var d of a.attributes) if (/data-/.test(d.name)) {
-      a = /^[\s\xa0]*([\s\S]*?)[\s\xa0]*$/.exec(d.name.replace("data-matched-content", "google_content_recommendation").replace("data", "google").replace(/-/g, "_"))[1];
-      if (!b.hasOwnProperty(a)) {
-        if (a == "google_reactive_ad_format") {
-          c = isNaN(parseInt(d.value, 10)) ? 0 : parseInt(d.value, 10);
-        } else {
-          c = d.value;
-        }
-        if (c !== null) {
-          b[a] = c;
+    for (var d of a.attributes) {
+      if (/data-/.test(d.name)) {
+        a = /^[\s\xa0]*([\s\S]*?)[\s\xa0]*$/.exec(d.name.replace("data-matched-content", "google_content_recommendation").replace("data", "google").replace(/-/g, "_"))[1];
+        if (!b.hasOwnProperty(a)) {
+          if (a == "google_reactive_ad_format") {
+            c = isNaN(parseInt(d.value, 10)) ? 0 : parseInt(d.value, 10);
+          } else {
+            c = d.value;
+          }
+          if (c !== null) {
+            b[a] = c;
+          }
         }
       }
     }
@@ -8090,8 +8498,10 @@ Analyzed & Deobfuscated By: VXAZ
         default:
           return 14;
       }
+    } else if (b.google_ad_intent_query) {
+      return 17;
     } else {
-      return b.google_ad_intent_query ? 17 : 12;
+      return 12;
     }
   }
   function Lo(a, b, c, d) {
@@ -8128,7 +8538,7 @@ Analyzed & Deobfuscated By: VXAZ
       g = a.offsetWidth || Vi(a, c, "width") || b.google_ad_width || 0;
       e = b.google_ad_client;
       if (d = an(f.location, "google_responsive_slot_preview") || Dm(f, 1, d, e)) {
-        b: if (b.google_reactive_ad_format || b.google_ad_resize || Co(b) || !((Sd.test(b.google_ad_width) || Rd.test(a.style.width)) && (Sd.test(b.google_ad_height) || Rd.test(a.style.height)))) {
+        b: if (b.google_reactive_ad_format || b.google_ad_resize || Co(b) || !Sd.test(b.google_ad_width) && !Rd.test(a.style.width) || !Sd.test(b.google_ad_height) && !Rd.test(a.style.height)) {
           d = false;
         } else {
           for (d = a; d; d = d.parentElement) {
@@ -8149,7 +8559,7 @@ Analyzed & Deobfuscated By: VXAZ
             d = false;
             break b;
           }
-          d = !!(c === c.top);
+          d = c === c.top;
         }
       }
       if (d) {
@@ -8164,7 +8574,7 @@ Analyzed & Deobfuscated By: VXAZ
     if (g = Co(b)) {
       Eo(g, a, b, c, d);
     } else {
-      if (!((Sd.test(b.google_ad_width) || Rd.test(a.style.width)) && (Sd.test(b.google_ad_height) || Rd.test(a.style.height)))) {
+      if (!Sd.test(b.google_ad_width) && !Rd.test(a.style.width) || !Sd.test(b.google_ad_height) && !Rd.test(a.style.height)) {
         if (d = c.getComputedStyle ? c.getComputedStyle(a, null) : a.currentStyle) {
           a.style.width = d.width;
           a.style.height = d.height;
@@ -8183,7 +8593,7 @@ Analyzed & Deobfuscated By: VXAZ
       }
       if (c.location && c.location.hash === "#gfwmrp" || b.google_responsive_auto_format === 12 && b.google_full_width_responsive === "true") {
         Eo(10, a, b, c, false);
-      } else if (Math.random() < .01 && b.google_responsive_auto_format === 12) {
+      } else if (Math.random() < 0.01 && b.google_responsive_auto_format === 12) {
         a = Qi(a.offsetWidth || parseInt(a.style.width, 10) || b.google_ad_width, c, a, b);
         if (a !== true) {
           b.efwr = false;
@@ -8215,23 +8625,25 @@ Analyzed & Deobfuscated By: VXAZ
     return 1;
   }
   function No(a, b, c) {
-    for (const f of b) a: {
-      b = a;
-      for (let g = 0; g < b.g.length; g++) {
-        if (b.g[g].element.contains(f)) {
-          b.g[g].labels.add(c);
-          break a;
+    for (const f of b) {
+      a: {
+        b = a;
+        for (let g = 0; g < b.g.length; g++) {
+          if (b.g[g].element.contains(f)) {
+            b.g[g].labels.add(c);
+            break a;
+          }
+          if (f.contains(b.g[g].element)) {
+            b.g[g].element = f;
+            b.g[g].labels.add(c);
+            break a;
+          }
         }
-        if (f.contains(b.g[g].element)) {
-          b.g[g].element = f;
-          b.g[g].labels.add(c);
-          break a;
-        }
+        b.g.push({
+          element: f,
+          labels: new Set([c])
+        });
       }
-      b.g.push({
-        element: f,
-        labels: new Set([c])
-      });
     }
   }
   class Oo {
@@ -8244,17 +8656,17 @@ Analyzed & Deobfuscated By: VXAZ
   }
   function Po(a) {
     const b = {
-      ec: Oa(a.document.querySelectorAll("ins.adsbygoogle-ablated-ad-slot")),
-      hc: Oa(a.document.querySelectorAll("body ins.adsbygoogle")),
-      ib: Oa(a.document.querySelectorAll("iframe[id^=aswift_],iframe[id^=google_ads_frame]")),
-      jb: Oa(a.document.querySelectorAll(".google-auto-placed")),
-      kb: Oa(a.document.querySelectorAll("ins.adsbygoogle[data-anchor-status]")),
-      sb: (Hk(a) || Oa(a.document.querySelectorAll("div[id^=div-gpt-ad]"))).concat(Oa(a.document.querySelectorAll("iframe[id^=google_ads_iframe]"))),
-      lc: Hk(a) || Oa(a.document.querySelectorAll("div[id^=div-gpt-ad]")),
-      vc: Oa(a.document.querySelectorAll("ins.adsbygoogle[data-ad-format=autorelaxed]")),
-      Bb: Oa(a.document.querySelectorAll("div.trc_related_container,div.OUTBRAIN,div[id^=rcjsload],div[id^=ligatusframe],div[id^=crt-],iframe[id^=cto_iframe],div[id^=yandex_], div[id^=Ya_sync],iframe[src*=adnxs],div.advertisement--appnexus,div[id^=apn-ad],div[id^=amzn-native-ad],iframe[src*=amazon-adsystem],iframe[id^=ox_],iframe[src*=openx],img[src*=openx],div[class*=adtech],div[id^=adtech],iframe[src*=adtech],div[data-content-ad-placement=true],div.wpcnt div[id^=atatags-]")),
-      kc: Oa(a.document.querySelectorAll("div.googlepublisherpluginad")),
-      Mb: Oa(a.document.querySelectorAll("html > ins.adsbygoogle"))
+      ec: cloneArray(a.document.querySelectorAll("ins.adsbygoogle-ablated-ad-slot")),
+      hc: cloneArray(a.document.querySelectorAll("body ins.adsbygoogle")),
+      ib: cloneArray(a.document.querySelectorAll("iframe[id^=aswift_],iframe[id^=google_ads_frame]")),
+      jb: cloneArray(a.document.querySelectorAll(".google-auto-placed")),
+      kb: cloneArray(a.document.querySelectorAll("ins.adsbygoogle[data-anchor-status]")),
+      sb: (Hk(a) || cloneArray(a.document.querySelectorAll("div[id^=div-gpt-ad]"))).concat(cloneArray(a.document.querySelectorAll("iframe[id^=google_ads_iframe]"))),
+      lc: Hk(a) || cloneArray(a.document.querySelectorAll("div[id^=div-gpt-ad]")),
+      vc: cloneArray(a.document.querySelectorAll("ins.adsbygoogle[data-ad-format=autorelaxed]")),
+      Bb: cloneArray(a.document.querySelectorAll("div.trc_related_container,div.OUTBRAIN,div[id^=rcjsload],div[id^=ligatusframe],div[id^=crt-],iframe[id^=cto_iframe],div[id^=yandex_], div[id^=Ya_sync],iframe[src*=adnxs],div.advertisement--appnexus,div[id^=apn-ad],div[id^=amzn-native-ad],iframe[src*=amazon-adsystem],iframe[id^=ox_],iframe[src*=openx],img[src*=openx],div[class*=adtech],div[id^=adtech],iframe[src*=adtech],div[data-content-ad-placement=true],div.wpcnt div[id^=atatags-]")),
+      kc: cloneArray(a.document.querySelectorAll("div.googlepublisherpluginad")),
+      Mb: cloneArray(a.document.querySelectorAll("html > ins.adsbygoogle"))
     };
     const c = new Oo();
     No(c, b.ib, 1);
@@ -8348,11 +8760,19 @@ Analyzed & Deobfuscated By: VXAZ
   };
   function Wo(a) {
     const b = a.g.pc;
-    return b !== null && b !== 0 ? b : a.g.pc = be(a.l);
+    if (b !== null && b !== 0) {
+      return b;
+    } else {
+      return a.g.pc = be(a.l);
+    }
   }
   function Xo(a) {
     const b = a.g.wpc;
-    return b !== null && b !== "" ? b : a.g.wpc = a.l.google_ad_client ? String(a.l.google_ad_client) : (a.l.google_ad_modifications = a.l.google_ad_modifications || {}).head_tag_slot_vars?.google_ad_client ?? a.l.document.querySelector(".adsbygoogle[data-ad-client]")?.getAttribute("data-ad-client") ?? "";
+    if (b !== null && b !== "") {
+      return b;
+    } else {
+      return a.g.wpc = a.l.google_ad_client ? String(a.l.google_ad_client) : (a.l.google_ad_modifications = a.l.google_ad_modifications || {}).head_tag_slot_vars?.google_ad_client ?? a.l.document.querySelector(".adsbygoogle[data-ad-client]")?.getAttribute("data-ad-client") ?? "";
+    }
   }
   function Yo(a, b) {
     var c = new Gf();
@@ -8414,7 +8834,8 @@ Analyzed & Deobfuscated By: VXAZ
       a = Hc(a, 2, d);
       d = nc(nc(new uf(), 1, (Ji(b.l).clientWidth ?? undefined) == null ? Ji(b.l).clientWidth ?? undefined : Sb(Ji(b.l).clientWidth ?? undefined)), 2, Ji(b.l).clientHeight == null ? Ji(b.l).clientHeight : Sb(Ji(b.l).clientHeight));
       a = Hc(a, 1, d);
-      for (var e = d = b.l; d && d != d.parent;) {
+      var e = d = b.l;
+      while (d && d != d.parent) {
         d = d.parent;
         if (Jd(d)) {
           e = d;
@@ -8489,15 +8910,25 @@ Analyzed & Deobfuscated By: VXAZ
     }
   };
   function gp() {
-    return self.google_adtest === "on" || self.google_adbreak_test === "on" || window.location.host.endsWith("h5games.usercontent.goog") || window.location.host === "gamesnacks.com" ? window.document.querySelector("meta[name=\"h5-games-eids\"]")?.getAttribute("content")?.split(",").map(b => Math.floor(Number(b))).filter(b => !isNaN(b) && b > 0) || [] : [];
+    if (self.google_adtest === "on" || self.google_adbreak_test === "on" || window.location.host.endsWith("h5games.usercontent.goog") || window.location.host === "gamesnacks.com") {
+      return window.document.querySelector("meta[name=\"h5-games-eids\"]")?.getAttribute("content")?.split(",").map(b => Math.floor(Number(b))).filter(b => !isNaN(b) && b > 0) || [];
+    } else {
+      return [];
+    }
   }
   function testScriptSource(a) {
     var b = window.document;
     if (b.currentScript) {
-      return b.currentScript instanceof HTMLScriptElement && a.test(b.currentScript.src) ? 0 : 1;
+      if (b.currentScript instanceof HTMLScriptElement && a.test(b.currentScript.src)) {
+        return 0;
+      } else {
+        return 1;
+      }
     }
-    for (const c of b.scripts) if ((c instanceof HTMLScriptElement && a.test(c.src) ? 0 : 1) === 0) {
-      return 0;
+    for (const c of b.scripts) {
+      if ((c instanceof HTMLScriptElement && a.test(c.src) ? 0 : 1) === 0) {
+        return 0;
+      }
     }
     return 1;
   }
@@ -8559,7 +8990,11 @@ Analyzed & Deobfuscated By: VXAZ
       6: a => Ia(K(Yg).g(), Number(a)) >= 0,
       27: a => {
         a = op(a, "boolean");
-        return a !== undefined ? a : undefined;
+        if (a !== undefined) {
+          return a;
+        } else {
+          return undefined;
+        }
       },
       60: a => {
         try {
@@ -8585,7 +9020,11 @@ Analyzed & Deobfuscated By: VXAZ
       3: () => Vd(),
       6: a => {
         a = op(a, "number");
-        return a !== undefined ? a : undefined;
+        if (a !== undefined) {
+          return a;
+        } else {
+          return undefined;
+        }
       }
     },
     5: {
@@ -8599,7 +9038,11 @@ Analyzed & Deobfuscated By: VXAZ
       },
       4: a => {
         a = op(a, "string");
-        return a !== undefined ? a : undefined;
+        if (a !== undefined) {
+          return a;
+        } else {
+          return undefined;
+        }
       },
       12: a => {
         try {
@@ -8642,28 +9085,32 @@ Analyzed & Deobfuscated By: VXAZ
       } = e[e.length - 1];
       c.set(d, h + k * n);
     }
-    for (const f of b) for (const g of B(f, sp, 2, 4)) if (B(g, qp, 2, 4).length !== 0) {
-      b = Rb(y(g.A, 8)) ?? 0;
-      if (!(!((y(g.A, 4) == null ? y(g.A, 4) : Number.isFinite(y(g.A, 4)) ? y(g.A, 4) | 0 : undefined) ?? 0) || ((y(g.A, 13) == null ? y(g.A, 13) : Number.isFinite(y(g.A, 13)) ? y(g.A, 13) | 0 : undefined) ?? 0) || ((y(g.A, 14) == null ? y(g.A, 14) : Number.isFinite(y(g.A, 14)) ? y(g.A, 14) | 0 : undefined) ?? 0))) {
-        b = c.get((y(g.A, 4) == null ? y(g.A, 4) : Number.isFinite(y(g.A, 4)) ? y(g.A, 4) | 0 : undefined) ?? 0) ?? 0;
-        d = (Rb(y(g.A, 1)) ?? 0) * B(g, qp, 2, 4).length;
-        c.set((y(g.A, 4) == null ? y(g.A, 4) : Number.isFinite(y(g.A, 4)) ? y(g.A, 4) | 0 : undefined) ?? 0, b + d);
-      }
-      d = [];
-      for (e = 0; e < B(g, qp, 2, 4).length; e++) {
-        const h = {
-          bb: b,
-          Ya: Rb(y(g.A, 1)) ?? 0,
-          Za: B(g, qp, 2, 4).length,
-          Ab: e,
-          fa: (y(f.A, 1) == null ? y(f.A, 1) : Number.isFinite(y(f.A, 1)) ? y(f.A, 1) | 0 : undefined) ?? 0,
-          oa: g,
-          T: B(g, qp, 2, 4)[e]
-        };
-        d.push(h);
-      }
-      if (!(yp(a[2], (y(g.A, 10) == null ? y(g.A, 10) : Number.isFinite(y(g.A, 10)) ? y(g.A, 10) | 0 : undefined) ?? 0, d) || yp(a[1], (y(g.A, 4) == null ? y(g.A, 4) : Number.isFinite(y(g.A, 4)) ? y(g.A, 4) | 0 : undefined) ?? 0, d))) {
-        yp(a[0], B(g, qp, 2, 4)[0].getId(), d);
+    for (const f of b) {
+      for (const g of B(f, sp, 2, 4)) {
+        if (B(g, qp, 2, 4).length !== 0) {
+          b = Rb(y(g.A, 8)) ?? 0;
+          if (!!((y(g.A, 4) == null ? y(g.A, 4) : Number.isFinite(y(g.A, 4)) ? y(g.A, 4) | 0 : undefined) ?? 0) && !((y(g.A, 13) == null ? y(g.A, 13) : Number.isFinite(y(g.A, 13)) ? y(g.A, 13) | 0 : undefined) ?? 0) && !((y(g.A, 14) == null ? y(g.A, 14) : Number.isFinite(y(g.A, 14)) ? y(g.A, 14) | 0 : undefined) ?? 0)) {
+            b = c.get((y(g.A, 4) == null ? y(g.A, 4) : Number.isFinite(y(g.A, 4)) ? y(g.A, 4) | 0 : undefined) ?? 0) ?? 0;
+            d = (Rb(y(g.A, 1)) ?? 0) * B(g, qp, 2, 4).length;
+            c.set((y(g.A, 4) == null ? y(g.A, 4) : Number.isFinite(y(g.A, 4)) ? y(g.A, 4) | 0 : undefined) ?? 0, b + d);
+          }
+          d = [];
+          for (e = 0; e < B(g, qp, 2, 4).length; e++) {
+            const h = {
+              bb: b,
+              Ya: Rb(y(g.A, 1)) ?? 0,
+              Za: B(g, qp, 2, 4).length,
+              Ab: e,
+              fa: (y(f.A, 1) == null ? y(f.A, 1) : Number.isFinite(y(f.A, 1)) ? y(f.A, 1) | 0 : undefined) ?? 0,
+              oa: g,
+              T: B(g, qp, 2, 4)[e]
+            };
+            d.push(h);
+          }
+          if (!yp(a[2], (y(g.A, 10) == null ? y(g.A, 10) : Number.isFinite(y(g.A, 10)) ? y(g.A, 10) | 0 : undefined) ?? 0, d) && !yp(a[1], (y(g.A, 4) == null ? y(g.A, 4) : Number.isFinite(y(g.A, 4)) ? y(g.A, 4) | 0 : undefined) ?? 0, d)) {
+            yp(a[0], B(g, qp, 2, 4)[0].getId(), d);
+          }
+        }
       }
     }
     return a;
@@ -8679,7 +9126,7 @@ Analyzed & Deobfuscated By: VXAZ
     return true;
   }
   function zp(a = Od()) {
-    return b => Qd(`${b} + ${a}`) % 1E3;
+    return b => Qd(`${b} + ${a}`) % 1000;
   }
   const Ap = [12, 13, 20];
   function Bp(a, b) {
@@ -8705,7 +9152,12 @@ Analyzed & Deobfuscated By: VXAZ
       success: true,
       value: true
     };
-    return c.success ? !!c.value : (xg(a.M, A(b.T, Ye, 3), b.fa, b.T.getId(), c), false);
+    if (c.success) {
+      return !!c.value;
+    } else {
+      xg(a.M, A(b.T, Ye, 3), b.fa, b.T.getId(), c);
+      return false;
+    }
   }
   function Cp(a, b, c) {
     if (!a.g[c]) {
@@ -8734,38 +9186,42 @@ Analyzed & Deobfuscated By: VXAZ
     f = Ap.includes(b);
     const g = [];
     const h = [];
-    for (const m of [0, 1, 2]) for (const [p, v] of a.ja[m].entries()) {
-      var k = p;
-      var n = v;
-      const t = new Mf();
-      var l = n.filter(x => x.fa === b && a.i[x.T.getId()] && Bp(a, x));
-      if (l.length) {
-        for (const x of l) h.push(x.T);
-      } else if (!a.ya && (m === 2 ? (l = d[1], zc(t, 2, Nf, k == null ? k : Nb(k))) : l = d[0], k = l?.(String(k)) ?? (m === 2 && ((y(n[0].oa.A, 11) == null ? y(n[0].oa.A, 11) : Number.isFinite(y(n[0].oa.A, 11)) ? y(n[0].oa.A, 11) | 0 : undefined) ?? 0) === 1 ? undefined : d[0](String(k))), k !== undefined)) {
-        for (const x of n) {
-          if (x.fa !== b) {
-            continue;
-          }
-          n = k - x.bb;
-          l = x.Ya;
-          const H = x.Za;
-          const M = x.Ab;
-          if (!(n < 0 || n >= l * H || n % H !== M || !Bp(a, x))) {
-            n = (y(x.oa.A, 13) == null ? y(x.oa.A, 13) : Number.isFinite(y(x.oa.A, 13)) ? y(x.oa.A, 13) | 0 : undefined) ?? 0;
-            if (n !== 0 && n !== undefined) {
-              l = a.j[String(n)];
-              if (l !== undefined && l !== x.T.getId()) {
-                wg(a.M, a.j[String(n)], x.T.getId(), n);
-              } else {
-                a.j[String(n)] = x.T.getId();
-              }
-            }
+    for (const m of [0, 1, 2]) {
+      for (const [p, v] of a.ja[m].entries()) {
+        var k = p;
+        var n = v;
+        const t = new Mf();
+        var l = n.filter(x => x.fa === b && a.i[x.T.getId()] && Bp(a, x));
+        if (l.length) {
+          for (const x of l) {
             h.push(x.T);
           }
-        }
-        if (Dc(t, Nf) !== 0) {
-          yc(t, 3, k == null ? k : Pb(k), 0);
-          g.push(t);
+        } else if (!a.ya && (m === 2 ? (l = d[1], zc(t, 2, Nf, k == null ? k : Nb(k))) : l = d[0], k = l?.(String(k)) ?? (m === 2 && ((y(n[0].oa.A, 11) == null ? y(n[0].oa.A, 11) : Number.isFinite(y(n[0].oa.A, 11)) ? y(n[0].oa.A, 11) | 0 : undefined) ?? 0) === 1 ? undefined : d[0](String(k))), k !== undefined)) {
+          for (const x of n) {
+            if (x.fa !== b) {
+              continue;
+            }
+            n = k - x.bb;
+            l = x.Ya;
+            const H = x.Za;
+            const M = x.Ab;
+            if (!(n < 0) && !(n >= l * H) && n % H === M && !!Bp(a, x)) {
+              n = (y(x.oa.A, 13) == null ? y(x.oa.A, 13) : Number.isFinite(y(x.oa.A, 13)) ? y(x.oa.A, 13) | 0 : undefined) ?? 0;
+              if (n !== 0 && n !== undefined) {
+                l = a.j[String(n)];
+                if (l !== undefined && l !== x.T.getId()) {
+                  wg(a.M, a.j[String(n)], x.T.getId(), n);
+                } else {
+                  a.j[String(n)] = x.T.getId();
+                }
+              }
+              h.push(x.T);
+            }
+          }
+          if (Dc(t, Nf) !== 0) {
+            yc(t, 3, k == null ? k : Pb(k), 0);
+            g.push(t);
+          }
         }
       }
     }
@@ -8808,11 +9264,15 @@ Analyzed & Deobfuscated By: VXAZ
       this.j = {};
       if (a = De()) {
         a = a.split(",") || [];
-        for (const f of a) if (a = Number(f)) {
-          this.i[a] = true;
+        for (const f of a) {
+          if (a = Number(f)) {
+            this.i[a] = true;
+          }
         }
       }
-      for (const f of e) this.i[f] = true;
+      for (const f of e) {
+        this.i[f] = true;
+      }
     }
   };
   function Hp(a, b) {
@@ -8830,7 +9290,7 @@ Analyzed & Deobfuscated By: VXAZ
     tb: a,
     N: b,
     config: c,
-    mb: d = self.ggeac || (self.ggeac = {}),
+    mb: d = self.ggeac ||= {},
     nb: e = 0,
     M: f = new yg(em(A(a, up, 5)?.g()) ?? 0, em(A(a, up, 5)?.j()) ?? 0, A(a, up, 5)?.u() ?? false),
     ja: g = xp({
@@ -8853,14 +9313,14 @@ Analyzed & Deobfuscated By: VXAZ
       Wg(d);
       Lp(e, d);
       Pg(B(a, jf, 1, 2), [e], f, undefined, true);
-      Ag = Ag || !(!c || !c.yb);
+      Ag = Ag || !!c && !!c.yb;
       Jp(pp);
       if (b) {
         Jp(b);
       }
     }
   }
-  function Lp(a, b = self.ggeac || (self.ggeac = {})) {
+  function Lp(a, b = self.ggeac ||= {}) {
     Xg(K(Yg), b, a);
     Mp(b, a);
     Hp(K(Ip), b);
@@ -8888,7 +9348,7 @@ Analyzed & Deobfuscated By: VXAZ
   function Op(a, b, c) {
     var d = a.google_ad_modifications = a.google_ad_modifications || {};
     if (d.plle) {
-      Lp(1, a.ggeac || (a.ggeac = {}));
+      Lp(1, a.ggeac ||= {});
     } else {
       d.plle = true;
       d = A(b, vp, 12);
@@ -8900,14 +9360,16 @@ Analyzed & Deobfuscated By: VXAZ
           ya: e && !!a.google_disable_experiments,
           yb: e
         },
-        mb: a.ggeac || (a.ggeac = {}),
+        mb: a.ggeac ||= {},
         nb: 1
       });
       if (c = (y(b.A, 15) == null || typeof y(b.A, 15) === "string" ? y(b.A, 15) : undefined) ?? "") {
         c = Number(c);
         K(Yg).j(c);
       }
-      for (const f of rc(b, 19, Qb, 4)) K(Yg).i(f);
+      for (const f of rc(b, 19, Qb, 4)) {
+        K(Yg).i(f);
+      }
       Np(12, a);
       Np(10, a);
       a = (Jd(a.top) ? a.top : null) || a;
@@ -8991,11 +9453,23 @@ Analyzed & Deobfuscated By: VXAZ
     a = c === a;
     switch (b) {
       case 1:
-        return a ? 9 : 8;
+        if (a) {
+          return 9;
+        } else {
+          return 8;
+        }
       case 2:
-        return a ? 11 : 10;
+        if (a) {
+          return 11;
+        } else {
+          return 10;
+        }
       case 3:
-        return a ? 13 : 12;
+        if (a) {
+          return 13;
+        } else {
+          return 12;
+        }
     }
     return 1;
   }
@@ -9008,7 +9482,7 @@ Analyzed & Deobfuscated By: VXAZ
     var c = new $p();
     try {
       const f = a.createElement("link");
-      if (f.relList?.supports("compression-dictionary") && ((navUserAgent.indexOf("Chrome") != -1 || navUserAgent.indexOf("CriOS") != -1) && !(navUserAgent.indexOf("Edge") != -1) || navUserAgent.indexOf("Silk") != -1)) {
+      if (f.relList?.supports("compression-dictionary") && ((navUserAgent.indexOf("Chrome") != -1 || navUserAgent.indexOf("CriOS") != -1) && navUserAgent.indexOf("Edge") == -1 || navUserAgent.indexOf("Silk") != -1)) {
         if (b instanceof stringObject) {
           f.href = yd(b).toString();
           f.rel = "compression-dictionary";
@@ -9048,7 +9522,7 @@ Analyzed & Deobfuscated By: VXAZ
       } catch (d) {
         return;
       }
-      if (!(!c || c.googMsgType !== "sc-cnf")) {
+      if (!!c && c.googMsgType === "sc-cnf") {
         a(c, b);
       }
     });
@@ -9061,7 +9535,9 @@ Analyzed & Deobfuscated By: VXAZ
         return a;
       }
       const c = b.pubads();
-      for (const d of c.getSlots()) a.add(d.getSlotId().getDomId());
+      for (const d of c.getSlots()) {
+        a.add(d.getSlotId().getDomId());
+      }
     } catch {}
     return a;
   }
@@ -9113,13 +9589,29 @@ Analyzed & Deobfuscated By: VXAZ
   function lq(a, b) {
     return a.sources.reduce((c, d) => {
       d = b(d);
-      return c ? d && d.width * d.height !== 0 ? d.top < c.top ? d : c : c : d;
+      if (c) {
+        if (d && d.width * d.height !== 0) {
+          if (d.top < c.top) {
+            return d;
+          } else {
+            return c;
+          }
+        } else {
+          return c;
+        }
+      } else {
+        return d;
+      }
     }, null);
   }
   function compareElementAreas(a, b) {
     var c = Math.min(a.right, b.right) - Math.max(a.left, b.left);
     a = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
-    return c <= 0 || a <= 0 ? false : c * a * 100 / ((b.right - b.left) * (b.bottom - b.top)) >= 50;
+    if (c <= 0 || a <= 0) {
+      return false;
+    } else {
+      return c * a * 100 / ((b.right - b.left) * (b.bottom - b.top)) >= 50;
+    }
   }
   function mq() {
     const a = Array.from(document.getElementsByTagName("iframe")).filter(fq);
@@ -9225,39 +9717,41 @@ Analyzed & Deobfuscated By: VXAZ
       measurePerformance(a).takeRecords();
       var analyticsEndpoint = "https://pagead2.googlesyndication.com/pagead/gen_204?id=plmetrics";
       if (window.LayoutShift) {
-        analyticsEndpoint += "&cls=".concat(a.D.toFixed(3));
-        analyticsEndpoint += "&mls=".concat(a.Y.toFixed(3));
-        analyticsEndpoint += a.qa == null ? "&nls=null" : "&nls=".concat(Math.floor(a.qa));
+        analyticsEndpoint += `&cls=${a.D.toFixed(3)}`;
+        analyticsEndpoint += `&mls=${a.Y.toFixed(3)}`;
+        analyticsEndpoint += a.qa == null ? "&nls=null" : `&nls=${Math.floor(a.qa)}`;
         if (window.LayoutShiftAttribution) {
-          analyticsEndpoint += "&cas=".concat(a.B.toFixed(3));
-          analyticsEndpoint += a.Ka == null ? "&nas=null" : "&nas=".concat(Math.floor(a.Ka));
-          analyticsEndpoint += "&was=".concat(a.Pa.toFixed(3));
+          analyticsEndpoint += `&cas=${a.B.toFixed(3)}`;
+          analyticsEndpoint += a.Ka == null ? "&nas=null" : `&nas=${Math.floor(a.Ka)}`;
+          analyticsEndpoint += `&was=${a.Pa.toFixed(3)}`;
         }
-        analyticsEndpoint += "&wls=".concat(a.sa.toFixed(3));
-        analyticsEndpoint += "&tls=".concat(a.Oa.toFixed(3));
+        analyticsEndpoint += `&wls=${a.sa.toFixed(3)}`;
+        analyticsEndpoint += `&tls=${a.Oa.toFixed(3)}`;
       }
       if (window.LargestContentfulPaint) {
-        analyticsEndpoint += a.Ia == null ? "&lcp=null" : "&lcp=".concat(Math.floor(a.Ia));
-        analyticsEndpoint += a.Ha == null ? "&lcps=null" : "&lcps=".concat(Math.floor(a.Ha));
+        analyticsEndpoint += a.Ia == null ? "&lcp=null" : `&lcp=${Math.floor(a.Ia)}`;
+        analyticsEndpoint += a.Ha == null ? "&lcps=null" : `&lcps=${Math.floor(a.Ha)}`;
       }
       if (window.PerformanceEventTiming && a.Fa) {
-        analyticsEndpoint += a.Ea == null ? "&fid=null" : "&fid=".concat(Math.floor(a.Ea));
+        analyticsEndpoint += a.Ea == null ? "&fid=null" : `&fid=${Math.floor(a.Ea)}`;
       }
       if (window.PerformanceLongTaskTiming) {
-        analyticsEndpoint += a.C == null ? "&cbt=null" : "&cbt=".concat(Math.floor(a.C));
-        analyticsEndpoint += a.J == null ? "&mbt=null" : "&mbt=".concat(Math.floor(a.J));
-        analyticsEndpoint += a.ra == null ? "&nlt=null" : "&nlt=".concat(Math.floor(a.ra));
+        analyticsEndpoint += a.C == null ? "&cbt=null" : `&cbt=${Math.floor(a.C)}`;
+        analyticsEndpoint += a.J == null ? "&mbt=null" : `&mbt=${Math.floor(a.J)}`;
+        analyticsEndpoint += a.ra == null ? "&nlt=null" : `&nlt=${Math.floor(a.ra)}`;
       }
       let d = 0;
-      for (var c of document.getElementsByTagName("iframe")) if (fq(c)) {
-        d++;
+      for (var c of document.getElementsByTagName("iframe")) {
+        if (fq(c)) {
+          d++;
+        }
       }
-      analyticsEndpoint += d == null ? "&nif=null" : "&nif=".concat(Math.floor(d));
-      analyticsEndpoint += se(window) == null ? "&ifi=null" : "&ifi=".concat(Math.floor(se(window)));
+      analyticsEndpoint += d == null ? "&nif=null" : `&nif=${Math.floor(d)}`;
+      analyticsEndpoint += se(window) == null ? "&ifi=null" : `&ifi=${Math.floor(se(window))}`;
       c = K(Yg).g();
-      analyticsEndpoint += "&eid=".concat(encodeURIComponent(c.join()));
-      analyticsEndpoint += "&top=".concat(self === self.top ? 1 : 0);
-      analyticsEndpoint += a.Na ? "&qqid=".concat(encodeURIComponent(a.Na)) : be(self) == null ? "&pvsid=null" : "&pvsid=".concat(Math.floor(be(self)));
+      analyticsEndpoint += `&eid=${encodeURIComponent(c.join())}`;
+      analyticsEndpoint += `&top=${self === self.top ? 1 : 0}`;
+      analyticsEndpoint += a.Na ? `&qqid=${encodeURIComponent(a.Na)}` : be(self) == null ? "&pvsid=null" : `&pvsid=${Math.floor(be(self))}`;
       if (window.googletag) {
         analyticsEndpoint += "&gpt=1";
       }
@@ -9265,7 +9759,7 @@ Analyzed & Deobfuscated By: VXAZ
       if (c >= 0) {
         c = a.g[c].latency;
         if (c >= 0) {
-          analyticsEndpoint += c == null ? "&inp=null" : "&inp=".concat(Math.floor(c));
+          analyticsEndpoint += c == null ? "&inp=null" : `&inp=${Math.floor(c)}`;
         }
       }
       window.fetch(analyticsEndpoint, {
@@ -9289,7 +9783,7 @@ Analyzed & Deobfuscated By: VXAZ
         a.B += b.value;
         a.Ka++;
       }
-      if (b.startTime - a.Ja > 5E3 || b.startTime - a.Ma > 1E3) {
+      if (b.startTime - a.Ja > 5000 || b.startTime - a.Ma > 1000) {
         a.Ja = b.startTime;
         a.i = 0;
         a.j = 0;
@@ -9411,7 +9905,7 @@ Analyzed & Deobfuscated By: VXAZ
       if (!f.ta || f.ta && (e || 0) >= f.ta) {
         a.className += " adsbygoogle-ablated-ad-slot";
         c = c.google_sv_map = c.google_sv_map || {};
-        d = la(a);
+        d = containsClosureUID(a);
         b.google_element_uid = d;
         c[b.google_element_uid] = b;
         a.setAttribute("google_element_uid", String(d));
@@ -9428,14 +9922,21 @@ Analyzed & Deobfuscated By: VXAZ
         return true;
       }
     }
-    if ((f = c.getComputedStyle ? c.getComputedStyle(a, null) : a.currentStyle) && f.display === "none" && !(b.google_adtest === "on" || b.google_reactive_ad_format > 0 || d)) {
+    if ((f = c.getComputedStyle ? c.getComputedStyle(a, null) : a.currentStyle) && f.display === "none" && b.google_adtest !== "on" && !(b.google_reactive_ad_format > 0) && !d) {
       if (c.document.createComment) {
         a.appendChild(c.document.createComment("No ad requested because of display:none on the adsbygoogle tag"));
       }
       return true;
     }
     a = b.google_pgb_reactive == null || b.google_pgb_reactive === 3;
-    return b.google_reactive_ad_format !== 1 && b.google_reactive_ad_format !== 8 || !a ? false : (self.console && self.console.warn("Adsbygoogle tag with data-reactive-ad-format=" + String(b.google_reactive_ad_format) + " is deprecated. Check out page-level ads at https://www.google.com/adsense"), true);
+    if (b.google_reactive_ad_format !== 1 && b.google_reactive_ad_format !== 8 || !a) {
+      return false;
+    } else {
+      if (self.console) {
+        self.console.warn("Adsbygoogle tag with data-reactive-ad-format=" + String(b.google_reactive_ad_format) + " is deprecated. Check out page-level ads at https://www.google.com/adsense");
+      }
+      return true;
+    }
   }
   function Hq(a) {
     var b = document.getElementsByTagName("INS");
@@ -9488,7 +9989,7 @@ Analyzed & Deobfuscated By: VXAZ
         c[h] = false;
       }
     });
-    if (ka(a.enable_page_level_ads)) {
+    if (isObjectOrFunction(a.enable_page_level_ads)) {
       c.page_level_pubvars = a.enable_page_level_ads;
     }
     const e = Kq();
@@ -9548,7 +10049,7 @@ Analyzed & Deobfuscated By: VXAZ
       if (!cj[c]) {
         delete a[c];
         b = c.replace("google", "data").replace(/_/g, "-");
-        self.console.warn("AdSense head tag doesn't support ".concat(b, " attribute."));
+        self.console.warn(`AdSense head tag doesn't support ${b} attribute.`);
       }
     });
   }
@@ -9722,12 +10223,18 @@ Analyzed & Deobfuscated By: VXAZ
     }
   }
   function Mq(a) {
-    return a.google_ad_client ? a.google_ad_client : (a = a.params) && a.google_ad_client ? a.google_ad_client : "";
+    if (a.google_ad_client) {
+      return a.google_ad_client;
+    } else if ((a = a.params) && a.google_ad_client) {
+      return a.google_ad_client;
+    } else {
+      return "";
+    }
   }
   function Vq() {
     if (K($d).j(ii.g, ii.defaultValue)) {
       const a = wm(window);
-      if (!(a && a.Qa)) {
+      if (!a || !a.Qa) {
         xm(window);
       }
     }
@@ -9775,7 +10282,7 @@ Analyzed & Deobfuscated By: VXAZ
       b.dataset.adsbygoogleStatus = "reserved";
       document.documentElement.appendChild(b);
     } else if (b = b.element) {
-      if (!(dj.test(b.className) && b.dataset.adsbygoogleStatus !== "done") && (b.id ? b = Hq(b.id) : b = null, !b)) {
+      if ((!dj.test(b.className) || b.dataset.adsbygoogleStatus === "done") && (b.id ? b = Hq(b.id) : b = null, !b)) {
         throw new T("'element' has already been filled.");
       }
       if (!("innerHTML" in b)) {
@@ -9803,7 +10310,7 @@ Analyzed & Deobfuscated By: VXAZ
     return b;
   }
   function Zq(a) {
-    Rk().S[Vk[a] || "google_ps_".concat(26)] = !!Number(a);
+    Rk().S[Vk[a] || `google_ps_${26}`] = !!Number(a);
   }
   function $q(a) {
     if (Number(a)) {
@@ -9824,7 +10331,7 @@ Analyzed & Deobfuscated By: VXAZ
         }
       };
       self.setTimeout(a, 0);
-      self.setTimeout(a, 1E3);
+      self.setTimeout(a, 1000);
     }
   }
   function ar(a) {
@@ -9905,14 +10412,14 @@ Analyzed & Deobfuscated By: VXAZ
         } catch (e) {
           console.error("[Ad Placement API] adBreakDone callback threw an error:", e instanceof Error ? e : Error(String(e)));
         }
-      }, K($d).u(Ai.g, Ai.defaultValue) * 1E3);
+      }, K($d).u(Ai.g, Ai.defaultValue) * 1000);
       Bq.set(b, d);
     }
   }
   (function (a, b, c) {
     var d = () => {};
     var c = function (a) {
-      var b = (Qb(y(b.A, 1)) ?? 0) > 2012 ? "_fy".concat(Qb(y(b.A, 1)) ?? 0) : "";
+      var b = (Qb(y(b.A, 1)) ?? 0) > 2012 ? `_fy${Qb(y(b.A, 1)) ?? 0}` : "";
       createPolicyScriptObject`data:text/javascript,//show_ads_impl_preview.js`;
       return {
         Jb: createPolicyScriptObject`https://pagead2.googlesyndication.com/pagead/managed/js/adsense/${a}/slotcar_library${b}.js`,
@@ -9959,7 +10466,7 @@ Analyzed & Deobfuscated By: VXAZ
         }
       });
       jk(1086, dp(k === 0));
-      if (!(navUserAgent.indexOf("Trident") != -1 || navUserAgent.indexOf("MSIE") != -1) || parseString_ExtractInt(auditNavUA(), 11) >= 0) {
+      if (navUserAgent.indexOf("Trident") == -1 && navUserAgent.indexOf("MSIE") == -1 || parseString_ExtractInt(auditNavUA(), 11) >= 0) {
         fk(K($d).j(Di.g, Di.defaultValue));
         Vn();
         gm(Ec(f, Gm, 26));
@@ -9990,8 +10497,10 @@ Analyzed & Deobfuscated By: VXAZ
             });
           } catch {}
           if (k) {
-            for (const l of ["requestNonPersonalizedAds", "pauseAdRequests"]) if (k[l] !== undefined) {
-              g[l] = k[l];
+            for (const l of ["requestNonPersonalizedAds", "pauseAdRequests"]) {
+              if (k[l] !== undefined) {
+                g[l] = k[l];
+              }
             }
           }
           Iq(k, n, f);
@@ -10003,4 +10512,4 @@ Analyzed & Deobfuscated By: VXAZ
       }
     }, undefined);
   })("m202504290101", typeof sttc === "undefined" ? undefined : sttc);
-}).call(this, /*REDACTED: contextPayload {Type: String, Format: JSON}*/);
+}).call(this /*REDACTED: contextPayload {Type: String, Format: JSON}*/);
